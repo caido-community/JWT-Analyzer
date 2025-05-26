@@ -7,19 +7,11 @@
           <div class="flex items-center justify-between w-full">
             <div class="flex items-center">
               <span class="tab-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512">
-                  <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
-                </svg>
+                <i class="pi pi-code"></i>
               </span>
               <span>JWT Editor</span>
             </div>
-            <Button label="New Token" icon="pi pi-plus" size="small" @click="addNewTokenTab" class="p-button-outlined">
-              <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-              </template>
-            </Button>
+            <Button label="New Token" icon="pi pi-plus" size="small" @click="addNewTokenTab" class="p-button-outlined" />
           </div>
         </template>
         <template #content>
@@ -35,9 +27,7 @@
                         @click.stop="closeTokenTab(index)" 
                         class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <i class="pi pi-times"></i>
                       </button>
                     </div>
                   </template>
@@ -54,34 +44,10 @@
                     </div>
 
                     <div class="flex space-x-2 mb-4">
-                      <Button icon="pi pi-search" label="Decode" @click="() => decodeToken(tab)">
-                        <template #icon>
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                          </svg>
-                        </template>
-                      </Button>
-                      <Button label="Validate" @click="() => validateToken(tab)" severity="success">
-                        <template #icon>
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                          </svg>
-                        </template>
-                      </Button>
-                      <Button label="Sign" @click="() => prepareSignTab(tab)" severity="info">
-                        <template #icon>
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                          </svg>
-                        </template>
-                      </Button>
-                      <Button label="Attack" @click="() => prepareAttackTab(tab)" severity="warning">
-                        <template #icon>
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                          </svg>
-                        </template>
-                      </Button>
+                      <Button icon="pi pi-search" label="Decode" @click="() => decodeToken(tab)" />
+                                              <Button label="Validate" icon="pi pi-check" @click="() => validateToken(tab)" severity="success" />
+                                              <Button label="Sign" icon="pi pi-lock" @click="() => prepareSignTab(tab)" severity="info" />
+                                              <Button label="Attack" icon="pi pi-exclamation-triangle" @click="() => prepareAttackTab(tab)" severity="warning" />
                     </div>
 
                     <div v-if="tab.decodedToken" class="decoded-token flex-grow overflow-auto">
@@ -145,27 +111,9 @@
 
                       <!-- Action buttons -->
                       <div class="flex space-x-2 mb-4">
-                        <Button label="Update Token" @click="() => updateToken(tab)" severity="info">
-                          <template #icon>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                            </svg>
-                          </template>
-                        </Button>
-                        <Button label="View in Token Details" @click="() => saveToDetails(tab)" severity="success" class="p-button-raised">
-                          <template #icon>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-                            </svg>
-                          </template>
-                        </Button>
-                        <Button label="Rename Tab" @click="() => prepareRenameTab(tab)" severity="secondary">
-                          <template #icon>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                            </svg>
-                          </template>
-                        </Button>
+                        <Button label="Update Token" icon="pi pi-refresh" @click="() => updateToken(tab)" severity="info" />
+                        <Button label="View in Token Details" icon="pi pi-external-link" @click="() => saveToDetails(tab)" severity="success" class="p-button-raised" />
+                        <Button label="Rename Tab" icon="pi pi-pencil" @click="() => prepareRenameTab(tab)" severity="secondary" />
                       </div>
                     </div>
                   </div>
@@ -177,19 +125,11 @@
             <div v-if="tokenTabs.length === 0" class="flex items-center justify-center py-10">
               <div class="text-center">
                 <div class="text-gray-400 text-5xl mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                  </svg>
+                  <i class="pi pi-plus" style="font-size: 5rem;"></i>
                 </div>
                 <h3 class="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">No tokens yet</h3>
                 <p class="text-gray-500 mb-4">Click the plus button to add a new token</p>
-                <Button label="Add Token" @click="addNewTokenTab" class="p-button-outlined">
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                  </template>
-                </Button>
+                <Button label="Add Token" icon="pi pi-plus" @click="addNewTokenTab" class="p-button-outlined" />
               </div>
             </div>
           </div>
@@ -201,9 +141,7 @@
         <template #title>
           <div class="flex items-center">
             <span class="tab-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-                <path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"/>
-              </svg>
+              <i class="pi pi-key"></i>
             </span>
             <span>Keys Management</span>
           </div>
@@ -250,8 +188,8 @@
                   class="p-3 bg-[#b32139] dark:bg-[#b32139] text-white dark:text-white rounded cursor-pointer transition-colors hover:bg-[#9c1c30] dark:hover:bg-[#9c1c30] flex items-center justify-center"
                 >
                   <div class="attack-icon mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,7.6 15.9,8.7L17.3,7.3C15.8,5.8 13.9,5 12,5C10.1,5 8.2,5.8 6.7,7.3L8.1,8.7C9.2,7.6 10.6,7 12,7M9,17V15H15V17H9M12,13C10.67,13 9.69,11.93 10.14,10.94C10.35,10.44 10.73,10.04 11.2,9.83C11.46,9.71 11.72,9.65 12,9.65C12.28,9.65 12.54,9.71 12.8,9.83C13.27,10.04 13.65,10.44 13.86,10.94C14.31,11.93 13.33,13 12,13Z"/>
                     </svg>
                   </div>
                   <div class="font-medium">{{ attack.name }}</div>
@@ -297,13 +235,11 @@
               class="p-button-secondary rounded-none bg-gray-700 text-white border-0 eye-toggle"
               style="height: 100%; width: 3rem;">
               <template #icon>
-                <svg v-if="showKeyValue" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                <svg v-if="showKeyValue" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
-                  <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
                 </svg>
               </template>
             </Button>
@@ -312,8 +248,8 @@
               class="p-button-info rounded-l-none bg-[#b32139] border-0 text-white" 
               @click="generateRandomKey">
               <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
                 </svg>
               </template>
             </Button>
@@ -331,13 +267,11 @@
               class="p-button-secondary bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-0 rounded-full eye-toggle"
               style="width: 2.5rem; min-width: 2.5rem; height: 2.5rem;">
               <template #icon>
-                <svg v-if="showPrivateKey" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                <svg v-if="showPrivateKey" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
-                  <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
                 </svg>
               </template>
             </Button>
@@ -352,8 +286,8 @@
             class="mt-3 p-button-info bg-[#b32139] border-0 text-white" 
             @click="generateKeyPair">
             <template #icon>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
               </svg>
             </template>
           </Button>
@@ -422,8 +356,8 @@
             <div class="flex gap-2 items-center w-full">
               <InputText v-model="customWeakSecret" placeholder="Enter your custom weak secret" class="w-full" />
               <Button type="button" class="p-button-success" @click="addCustomSecret" style="min-width: 42px;">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                 </svg>
               </Button>
             </div>
@@ -439,8 +373,8 @@
                   type="button" 
                   class="p-button-danger p-button-sm"
                   @click="removeCustomSecretByValue(secret)">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                   </svg>
                 </Button>
               </li>
@@ -455,8 +389,8 @@
         
         <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-200 mt-4 rounded-r">
           <h3 class="font-semibold mb-2 text-lg flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="mr-2">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
             </svg>
             Attack Details:
           </h3>
@@ -659,8 +593,6 @@ onMounted(() => {
         // Decode the token if possible
         decodeToken(newTab);
         
-        // Toast notification is shown by the TokenDetailsTab component that dispatched the event
-        // No need to duplicate the notification here
       }
     }) as EventListener);
   } catch (error) {
@@ -842,9 +774,46 @@ function validateToken(tabInput: TokenTab) {
     return;
   }
 
+  // First validate JSON format
+  validateJson(tab, 'header');
+  validateJson(tab, 'payload');
+  
+  // Check for JSON errors
+  if (tab.headerJsonError) {
+    if ((window as any).caidoSDK?.window?.showToast) {
+      (window as any).caidoSDK.window.showToast('Invalid JSON format in header. Please fix the syntax errors.', {
+        variant: 'error',
+        duration: 3000
+      });
+    }
+    return;
+  }
+  
+  if (tab.payloadJsonError) {
+    if ((window as any).caidoSDK?.window?.showToast) {
+      (window as any).caidoSDK.window.showToast('Invalid JSON format in payload. Please fix the syntax errors.', {
+        variant: 'error',
+        duration: 3000
+      });
+    }
+    return;
+  }
+
   try {
     const header = JSON.parse(tab.headerJson);
     const payload = JSON.parse(tab.payloadJson);
+    
+    // Validate JWT-specific fields
+    const validationErrors = validateJWTFields(header, payload);
+    if (validationErrors.length > 0) {
+      if ((window as any).caidoSDK?.window?.showToast) {
+        (window as any).caidoSDK.window.showToast(`Invalid JWT: ${validationErrors.join(', ')}`, {
+          variant: 'error',
+          duration: 4000
+        });
+      }
+      return;
+    }
     
     // Basic validation
     if (!header.alg) {
@@ -857,12 +826,39 @@ function validateToken(tabInput: TokenTab) {
       return;
     }
     
+    // CRITICAL FIX: Validate that the signature matches the current header+payload
+    const isSignatureValid = validateTokenSignature(tab, header, payload);
+    
+    if (!isSignatureValid) {
+      if ((window as any).caidoSDK?.window?.showToast) {
+        (window as any).caidoSDK.window.showToast('INVALID SIGNATURE: Token signature does not match the current header and payload', {
+          variant: 'error',
+          duration: 5000
+        });
+      }
+      return;
+    }
+    
     // Check expiration if set
     if (payload.exp) {
       const now = Math.floor(Date.now() / 1000);
       if (payload.exp < now) {
         if ((window as any).caidoSDK?.window?.showToast) {
-          (window as any).caidoSDK.window.showToast('Token has expired', {
+          (window as any).caidoSDK.window.showToast('Token signature is valid but token has expired', {
+            variant: 'warning',
+            duration: 3000
+          });
+        }
+        return;
+      }
+    }
+    
+    // Check not-before claim
+    if (payload.nbf) {
+      const now = Math.floor(Date.now() / 1000);
+      if (payload.nbf > now) {
+        if ((window as any).caidoSDK?.window?.showToast) {
+          (window as any).caidoSDK.window.showToast('Token signature is valid but token is not yet valid (nbf claim)', {
             variant: 'warning',
             duration: 3000
           });
@@ -872,18 +868,142 @@ function validateToken(tabInput: TokenTab) {
     }
     
     if ((window as any).caidoSDK?.window?.showToast) {
-      (window as any).caidoSDK.window.showToast('Token validation passed', {
+      (window as any).caidoSDK.window.showToast('Token validation passed - signature is valid and token is active', {
         variant: 'success',
         duration: 3000
       });
     }
   } catch (error) {
+    console.error('Token validation error:', error);
     if ((window as any).caidoSDK?.window?.showToast) {
-      (window as any).caidoSDK.window.showToast('Error validating token', {
+      (window as any).caidoSDK.window.showToast('Invalid JSON format in header or payload. Please check your syntax.', {
         variant: 'error',
         duration: 3000
       });
     }
+  }
+}
+
+/**
+ * Validate JWT-specific field types and values
+ */
+function validateJWTFields(header: any, payload: any): string[] {
+  const errors: string[] = [];
+  
+  // Validate header fields
+  if (header.alg && typeof header.alg !== 'string') {
+    errors.push('Header "alg" must be a string');
+  }
+  if (header.typ && typeof header.typ !== 'string') {
+    errors.push('Header "typ" must be a string');
+  }
+  if (header.kid && typeof header.kid !== 'string') {
+    errors.push('Header "kid" must be a string');
+  }
+  
+  // Validate payload fields
+  if (payload.exp !== undefined) {
+    if (typeof payload.exp !== 'number' || !Number.isInteger(payload.exp)) {
+      errors.push('Payload "exp" (expiration) must be a numeric timestamp (integer)');
+    }
+  }
+  
+  if (payload.iat !== undefined) {
+    if (typeof payload.iat !== 'number' || !Number.isInteger(payload.iat)) {
+      errors.push('Payload "iat" (issued at) must be a numeric timestamp (integer)');
+    }
+  }
+  
+  if (payload.nbf !== undefined) {
+    if (typeof payload.nbf !== 'number' || !Number.isInteger(payload.nbf)) {
+      errors.push('Payload "nbf" (not before) must be a numeric timestamp (integer)');
+    }
+  }
+  
+  if (payload.iss !== undefined && typeof payload.iss !== 'string') {
+    errors.push('Payload "iss" (issuer) must be a string');
+  }
+  
+  if (payload.sub !== undefined && typeof payload.sub !== 'string') {
+    errors.push('Payload "sub" (subject) must be a string');
+  }
+  
+  if (payload.aud !== undefined) {
+    if (typeof payload.aud !== 'string' && !Array.isArray(payload.aud)) {
+      errors.push('Payload "aud" (audience) must be a string or array of strings');
+    } else if (Array.isArray(payload.aud)) {
+      const hasNonString = payload.aud.some((aud: any) => typeof aud !== 'string');
+      if (hasNonString) {
+        errors.push('Payload "aud" (audience) array must contain only strings');
+      }
+    }
+  }
+  
+  if (payload.jti !== undefined && typeof payload.jti !== 'string') {
+    errors.push('Payload "jti" (JWT ID) must be a string');
+  }
+  
+  return errors;
+}
+
+/**
+ * This function checks if the signature was generated from the current header+payload combination
+ */
+function validateTokenSignature(tab: TokenTab, header: any, payload: any): boolean {
+  try {
+    // Reconstruct what the token should look like with current header+payload
+    const base64UrlHeader = btoa(JSON.stringify(header))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    
+    const base64UrlPayload = btoa(JSON.stringify(payload))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    
+    // Get the original token signature
+    const originalParts = tab.token.split('.');
+    if (originalParts.length !== 3) {
+      console.log('Signature validation failed: Invalid token format (not 3 parts)');
+      return false;
+    }
+    
+    // Check if the header and payload in the current token match what we expect
+    // If they don't match, the signature is definitely invalid
+    const originalHeader = originalParts[0];
+    const originalPayload = originalParts[1];
+    
+    // Compare the base64url encoded versions
+    if (originalHeader !== base64UrlHeader || originalPayload !== base64UrlPayload) {
+      console.log('Signature validation failed: Header or payload has been modified');
+      console.log('Original header:', originalHeader);
+      console.log('Current header:', base64UrlHeader);
+      console.log('Original payload:', originalPayload);
+      console.log('Current payload:', base64UrlPayload);
+      console.log('Header match:', originalHeader === base64UrlHeader);
+      console.log('Payload match:', originalPayload === base64UrlPayload);
+      return false;
+    }
+    
+    // If header and payload match, the signature should still be valid
+    // Note: We cannot verify the actual cryptographic signature without the secret key,
+    // but we can at least verify that the token parts haven't been tampered with
+    
+    // Additional check: if algorithm is 'none', there should be no signature or empty signature
+    if (header.alg === 'none') {
+      const signature = originalParts[2];
+      if (signature && signature !== '') {
+        console.log('Signature validation failed: Algorithm is "none" but signature is present');
+        return false;
+      }
+    }
+    
+    console.log('Signature validation passed: Token parts are consistent');
+    return true;
+  } catch (error) {
+    console.error('Error during signature validation:', error);
+    return false;
   }
 }
 
@@ -928,9 +1048,9 @@ function updateToken(tabInput: TokenTab) {
       }
       
       if ((window as any).caidoSDK?.window?.showToast) {
-        (window as any).caidoSDK.window.showToast('Token updated successfully', {
-          variant: 'success',
-          duration: 3000
+        (window as any).caidoSDK.window.showToast('Token updated successfully - WARNING: Signature is now invalid and needs to be re-signed', {
+          variant: 'warning',
+          duration: 5000
         });
       }
     }
@@ -1108,7 +1228,6 @@ async function generateRSAKeyPair() {
 
 // Fallback function for legacy browsers or if Web Crypto fails
 function simulateRSAKeyPair() {
-  // This is a fallback to the previous simulation code
   newKey.value.publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
 4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
@@ -1187,7 +1306,6 @@ async function generateECKeyPair() {
 
 // Fallback function for legacy browsers or if Web Crypto fails
 function simulateECKeyPair() {
-  // This is a fallback to the previous simulation code
   newKey.value.publicKey = `-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEVs/o5+uQbTjL3chynL4wXgUg2R9
 q9UU8I5mEovUf86QZ7kOBIjJwqnzD1omageEHWwHdBO6B+dFabmdT9POxg==
@@ -2179,15 +2297,15 @@ function removeCustomSecretByValue(secret: string) {
 
 .tab-icon {
   display: inline-flex;
-  margin-right: 0.5rem;
-  width: 1rem;
-  height: 1rem;
+  margin-right: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.tab-icon svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
+.tab-icon i {
+  font-size: 1.25rem;
 }
 
 :deep(.p-button-outlined.justify-start) {

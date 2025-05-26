@@ -12,7 +12,7 @@ export default defineConfig({
   id,
   name: "JWT Analyzer",
   description: "Decodes and analyzes JWT tokens in requests and responses",
-  version: "1.0.0",
+  version: "1.0.1",
   author: {
     name: "Amr Elsagaei",
     email: "info@amrelsagaei.com",

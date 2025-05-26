@@ -51,7 +51,7 @@ export const init = (sdk: FrontendSDK) => {
   // Register navigation page and sidebar item
   const pagePath = "/jwt-analyzer";
   sdk.navigation.addPage(pagePath, { body: root });
-  sdk.sidebar.registerItem("JWT Analyzer", pagePath);
+  sdk.sidebar.registerItem("JWT Analyzer", pagePath, {icon: "fa-solid fa-key",});
   
   // Function to navigate to JWT Analyzer
   const navigateToJWTAnalyzer = () => {

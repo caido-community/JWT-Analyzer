@@ -75,9 +75,7 @@
         <div class="flex items-center justify-between">
         <div class="flex items-center">
           <span class="tab-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-              <path d="M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z"/>
-            </svg>
+            <i class="pi pi-list"></i>
           </span>
           <span>Recent Findings</span>
           </div>
@@ -98,9 +96,7 @@
         <div v-if="findings.length === 0" class="flex items-center justify-center h-full min-h-[200px] text-gray-500">
           <div class="text-center">
             <span class="block text-4xl mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512" fill="currentColor">
-                <path d="M246.6 150.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l96-96c12.5-12.5 32.8-12.5 45.3 0l96 96c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L352 109.3V384c0 35.3 28.7 64 64 64h64c17.7 0 32 14.3 32 32s-14.3 32-32 32H416c-70.7 0-128-57.3-128-128c0-35.3-28.7-64-64-64s-64 28.7-64 64c0 70.7-57.3 128-128 128H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h64c35.3 0 64-28.7 64-64V109.3l-41.4 41.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l96-96c12.5-12.5 32.8-12.5 45.3 0l96 96c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 109.3V256c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l-41.4 41.4z"/>
-              </svg>
+              <i class="pi pi-inbox text-4xl"></i>
             </span>
             <p>No JWT findings yet</p>
           </div>
@@ -910,15 +906,15 @@ watch(filteredFindings, (newFilteredFindings: Finding[]) => {
 
 .tab-icon {
   display: inline-flex;
-  margin-right: 0.5rem;
-  width: 1rem;
-  height: 1rem;
+  margin-right: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.tab-icon svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
+.tab-icon i {
+  font-size: 1.25rem;
 }
 
 .request-expansion pre {

@@ -5,9 +5,7 @@
       <template #title>
         <div class="flex items-center">
           <span class="tab-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-              <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
-            </svg>
+            <i class="pi pi-info-circle"></i>
           </span>
           <span>Help & Documentation</span>
         </div>
@@ -30,9 +28,7 @@
             <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
               <div class="flex items-center mb-3">
                 <span class="tab-icon text-xl mr-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-                    <path d="M32 32c17.7 0 32 14.3 32 32V400c0 8.8 7.2 16 16 16H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H80c-44.2 0-80-35.8-80-80V64C0 46.3 14.3 32 32 32zM160 224c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V256c0-17.7 14.3-32 32-32zm128-64V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V160c0-17.7 14.3-32 32-32s32 14.3 32 32zm64 32c17.7 0 32 14.3 32 32v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V224c0-17.7 14.3-32 32-32z"/>
-                  </svg>
+                  <i class="pi pi-chart-bar"></i>
                 </span>
                 <h3 class="text-lg font-bold">Dashboard</h3>
               </div>
@@ -62,9 +58,7 @@
             <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
               <div class="flex items-center mb-3">
                 <span class="tab-icon text-xl mr-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512">
-                    <path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"/>
-                  </svg>
+                  <i class="pi pi-eye"></i>
                 </span>
                 <h3 class="text-lg font-bold">JWT Decoder</h3>
               </div>
@@ -95,9 +89,7 @@
             <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
               <div class="flex items-center mb-3">
                 <span class="tab-icon text-xl mr-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-                    <path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"/>
-                  </svg>
+                  <i class="pi pi-key"></i>
                 </span>
                 <h3 class="text-lg font-bold">Token Details</h3>
               </div>
@@ -129,9 +121,7 @@
             <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
               <div class="flex items-center mb-3">
                 <span class="tab-icon text-xl mr-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512">
-                    <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
-                  </svg>
+                  <i class="pi pi-code"></i>
                 </span>
                 <h3 class="text-lg font-bold">JWT Editor</h3>
               </div>
@@ -169,9 +159,7 @@
               <div>
                 <div class="flex items-center mb-3">
                   <span class="tab-icon text-xl mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512">
-                      <path d="M64 0C28.7 0 0 28.7 0 64V352c0 35.3 28.7 64 64 64h96v80c0 6.1 3.4 11.6 8.8 14.3s11.9 2.1 16.8-1.5L309.3 416H512c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H64z"/>
-                    </svg>
+                    <i class="pi pi-search"></i>
                   </span>
                   <h4 class="font-semibold text-lg text-blue-600 dark:text-blue-400">Finding JWT Vulnerabilities</h4>
                 </div>
@@ -203,9 +191,7 @@
               <div>
                 <div class="flex items-center mb-3">
                   <span class="tab-icon text-xl mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-                      <path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0z"/>
-                    </svg>
+                    <i class="pi pi-shield"></i>
                   </span>
                   <h4 class="font-semibold text-lg text-blue-600 dark:text-blue-400">JWT Security Best Practices</h4>
                 </div>
@@ -247,9 +233,7 @@
       <template #title>
         <div class="flex items-center">
           <span class="tab-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-              <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
-            </svg>
+            <i class="pi pi-info-circle"></i>
           </span>
           <span>About</span>
         </div>
@@ -259,7 +243,7 @@
           <div class="flex items-center justify-between mb-6">
             <div>
               <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">JWT Analyzer</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Version 1.0.0</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Version 1.0.1</p>
             </div>
             <a
               href="https://github.com/amrelsagaei/JWT-Analyzer"
@@ -267,9 +251,7 @@
               rel="noopener noreferrer"
               class="github-btn inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
-              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
-              </svg>
+              <i class="pi pi-github mr-2"></i>
               Star on GitHub
             </a>
           </div>
@@ -290,9 +272,7 @@
                   @click.prevent="copyToClipboard('https://www.linkedin.com/in/amrelsagaei')" 
                   class="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                 >
-                  <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                  </svg>
+                  <i class="pi pi-linkedin mr-2"></i>
                   LinkedIn
                 </a>
                 <a 
@@ -300,9 +280,7 @@
                   @click.prevent="copyToClipboard('info@amrelsagaei.com')"
                   class="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                 >
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                  </svg>
+                  <i class="pi pi-envelope mr-2"></i>
                   Email
                 </a>
               </div>
@@ -326,7 +304,7 @@ import { useSDK } from '../plugins/sdk';
 const sdk = useSDK();
 
 // Methods
-function copyToClipboard(text: string) {
+const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text)
     .then(() => {
       if ((window as any).caidoSDK?.window?.showToast) {
@@ -364,7 +342,7 @@ function copyToClipboard(text: string) {
         }
       }
     });
-}
+};
 </script>
 
 <style scoped>
@@ -390,15 +368,15 @@ function copyToClipboard(text: string) {
 
 .tab-icon {
   display: inline-flex;
-  margin-right: 0.5rem;
-  width: 1rem;
-  height: 1rem;
+  margin-right: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.tab-icon svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
+.tab-icon i {
+  font-size: 1.25rem;
 }
 
 .github-btn {

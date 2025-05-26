@@ -5,9 +5,7 @@
       <template #title>
         <div class="flex items-center">
           <span class="tab-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
-              <path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
-            </svg>
+            <i class="pi pi-lock-open"></i>
           </span>
           <span>Decode JWT Token</span>
         </div>
@@ -43,9 +41,7 @@
                 @click.stop="closeTokenTab(index)" 
                 class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <i class="pi pi-times"></i>
               </button>
             </div>
           </template>
@@ -57,9 +53,7 @@
               <template #title>
                 <div class="flex items-center">
                   <span class="tab-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512">
-                      <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
-                    </svg>
+                    <i class="pi pi-code"></i>
                   </span>
                   <span>Header</span>
                 </div>
@@ -75,9 +69,7 @@
               <template #title>
                 <div class="flex items-center">
                   <span class="tab-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
-                      <path d="M0 80V229.5c0 17 6.7 33.3 18.7 45.3l176 176c25 25 65.5 25 90.5 0L418.7 317.3c25-25 25-65.5 0-90.5l-176-176c-12-12-28.3-18.7-45.3-18.7H48C21.5 32 0 53.5 0 80zm112 32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
-                    </svg>
+                    <i class="pi pi-tag"></i>
                   </span>
                   <span>Payload</span>
                 </div>
@@ -94,9 +86,7 @@
             <template #title>
               <div class="flex items-center">
                 <span class="tab-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
-                    <path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0z"/>
-                  </svg>
+                  <i class="pi pi-shield"></i>
                 </span>
                 <span>Security Analysis</span>
               </div>
@@ -107,9 +97,7 @@
                   <div v-if="!token.analysis.risks || token.analysis.risks.length === 0" 
                   class="py-2 text-center text-gray-500">
                   <span class="tab-icon inline-block align-middle text-success-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill="currentColor">
-                      <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
-                    </svg>
+                    <i class="pi pi-check-circle"></i>
                   </span>
                   No risks detected
                 </div>
@@ -143,21 +131,8 @@
               
               <div class="flex justify-end mt-4 space-x-2">
                   <Button @click="renameTab(index)" icon="pi pi-pencil" text rounded tooltip="Rename Tab" />
-                  <Button label="View in Token Details" @click="viewTokenDetails(token)" severity="success" class="p-button-raised">
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-                    </svg>
-                  </template>
-                </Button>
-                  <Button label="Send to JWT Editor" @click="sendToJWTEditor(token)" severity="info" class="p-button-raised">
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                      <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
-                    </svg>
-                  </template>
-                </Button>
+                  <Button label="View in Token Details" @click="viewTokenDetails(token)" severity="success" class="p-button-raised" icon="pi pi-external-link" />
+                  <Button label="Send to JWT Editor" @click="sendToJWTEditor(token)" severity="info" class="p-button-raised" icon="pi pi-pencil" />
               </div>
             </template>
           </Card>
@@ -168,9 +143,7 @@
         
     <div v-if="decodedTokens.length === 0 && manualToken === ''" class="flex flex-col items-center justify-center py-10 text-gray-500 h-full">
           <span class="block text-4xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="currentColor" style="width: 2em; height: 2em;">
-              <path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
-            </svg>
+            <i class="pi pi-lock-open text-4xl"></i>
           </span>
           <h3 class="text-xl font-semibold">Enter a JWT Token</h3>
           <p class="mt-2 text-center">Paste a JWT token above to decode and analyze its contents</p>
@@ -185,8 +158,20 @@
         </div>
       </div>
       <template #footer>
-        <Button label="Cancel" icon="pi pi-times" @click="cancelRename" class="p-button-text" />
-        <Button label="Save" icon="pi pi-check" @click="saveRename" autofocus />
+        <Button label="Cancel" @click="cancelRename" class="p-button-text">
+          <template #icon>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </template>
+        </Button>
+        <Button label="Save" @click="saveRename" autofocus>
+          <template #icon>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </template>
+        </Button>
       </template>
     </Dialog>
   </div>
@@ -481,15 +466,15 @@ function handleSetDecoderToken(event: Event) {
 
 .tab-icon {
   display: inline-flex;
-  margin-right: 0.5rem;
-  width: 1rem;
-  height: 1rem;
+  margin-right: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.tab-icon svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
+.tab-icon i {
+  font-size: 1.25rem;
 }
 
 /* Token tabs styling */
