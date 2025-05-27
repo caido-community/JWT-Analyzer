@@ -1,6 +1,6 @@
 {
   "name": "jwt-analyzer",
-  "version": "0.0.6",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "typecheck": "pnpm -r typecheck",
