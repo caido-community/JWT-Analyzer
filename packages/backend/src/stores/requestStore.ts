@@ -49,15 +49,15 @@ export class RequestStore {
       
       // Emit event that request was added
       try {
-        this.sdk.events.emit("request:updated", {
+        this.sdk.api.send("request:updated", {  
           requestId: request.id,
           hasResponse: false
         });
       } catch (error) {
-        this.sdk.console.error("Error emitting request:updated event:", error);
+        this.sdk.console.error(`Error emitting request:updated event: ${error}`);
       }
     } catch (error) {
-      this.sdk.console.error("Error adding request to store:", error);
+      this.sdk.console.error(`Error adding request to store: ${error}`);
     }
   }
 
@@ -95,15 +95,15 @@ export class RequestStore {
       
       // Emit event that response was added
       try {
-        this.sdk.events.emit("request:updated", {
+        this.sdk.api.send("request:updated", {  
           requestId: requestId,
           hasResponse: true
         });
       } catch (error) {
-        this.sdk.console.error("Error emitting request:updated event:", error);
+        this.sdk.console.error(`Error emitting request:updated event: ${error}`);
       }
     } catch (error) {
-      this.sdk.console.error("Error adding response to store:", error);
+      this.sdk.console.error(`Error adding response to store: ${error}`);
     }
   }
 
@@ -123,7 +123,7 @@ export class RequestStore {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
       });
     } catch (error) {
-      this.sdk.console.error("Error getting requests:", error);
+      this.sdk.console.error(`Error getting requests: ${error}`);
       return [];
     }
   }
@@ -142,7 +142,7 @@ export class RequestStore {
         ...data
       };
     } catch (error) {
-      this.sdk.console.error(`Error getting request ${id}:`, error);
+      this.sdk.console.error(`Error getting request ${id}: ${error}`);
       return null;
     }
   }
@@ -155,7 +155,7 @@ export class RequestStore {
       this.requests.clear();
       this.sdk.console.log("All requests cleared from store");
     } catch (error) {
-      this.sdk.console.error("Error clearing requests:", error);
+      this.sdk.console.error(`Error clearing requests: ${error}`);
     }
   }
 
@@ -223,7 +223,7 @@ export class RequestStore {
       
       return sanitize(data);
     } catch (error) {
-      this.sdk.console.error("Error sanitizing data for storage:", error);
+      this.sdk.console.error(`Error sanitizing data for storage: ${error}`);
       return { error: "Error sanitizing data" };
     }
   }
@@ -265,7 +265,7 @@ export class RequestStore {
       this.sdk.console.log(`Formatted raw HTTP request (${raw.length} bytes)`);
       return raw;
     } catch (error) {
-      this.sdk.console.error("Error formatting raw HTTP request:", error);
+      this.sdk.console.error(`Error formatting raw HTTP request: ${error}`);
       return 'Error formatting HTTP request';
     }
   }
@@ -307,7 +307,7 @@ export class RequestStore {
       this.sdk.console.log(`Formatted raw HTTP response (${raw.length} bytes)`);
       return raw;
     } catch (error) {
-      this.sdk.console.error("Error formatting raw HTTP response:", error);
+      this.sdk.console.error(`Error formatting raw HTTP response: ${error}`);
       return 'Error formatting HTTP response';
     }
   }
