@@ -49,7 +49,7 @@ export class RequestStore {
       
       // Emit event that request was added
       try {
-        this.sdk.api.send("request:updated", {  
+        this.sdk.api.send("request:updated", {
           requestId: request.id,
           hasResponse: false
         });
@@ -95,7 +95,7 @@ export class RequestStore {
       
       // Emit event that response was added
       try {
-        this.sdk.api.send("request:updated", {  
+        this.sdk.api.send("request:updated", {
           requestId: requestId,
           hasResponse: true
         });
