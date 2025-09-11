@@ -20,6 +20,7 @@ export type API = DefineAPI<{
 export type BackendEvents = DefineEvents<{
   "jwt:analyzed": (finding: Finding) => void;
   "request:captured": (request: CapturedRequest) => void;
+  "request:updated": (request: UpdatedRequest) => void;
   "requests:cleared": () => void;
 }>;
 
@@ -96,3 +97,8 @@ export interface CapturedRequest {
   jwtLocations?: string[];
   response?: CapturedResponse;
 } 
+
+interface UpdatedRequest {
+  requestId: string;
+  hasResponse: boolean;
+}
