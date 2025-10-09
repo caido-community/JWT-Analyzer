@@ -78,6 +78,9 @@ importers:
       '@caido/primevue':
         specifier: 0.1.2
         version: 0.1.2
+      '@vueuse/core':
+        specifier: ^10.5.0
+        version: 10.11.1(vue@3.4.37(typescript@5.5.4))
       jspdf:
         specifier: ^3.0.1
         version: 3.0.1
@@ -89,14 +92,11 @@ importers:
         version: 3.4.37(typescript@5.5.4)
     devDependencies:
       '@caido/sdk-backend':
-        specifier: ^0.46.0
-        version: 0.46.0
+        specifier: ^0.51.0
+        version: 0.51.1
       '@caido/sdk-frontend':
-        specifier: ^0.46.0
-        version: 0.46.0(@codemirror/view@6.28.1)
-      '@codemirror/view':
-        specifier: 6.28.1
-        version: 6.28.1
+        specifier: ^0.51.2-beta.0
+        version: 0.51.2-beta.15(@ai-sdk/provider@2.0.0)(@codemirror/state@6.5.2)(@codemirror/view@6.28.1)(vue@3.4.37(typescript@5.5.4))
       backend:
         specifier: workspace:*
         version: link:../backend
@@ -105,6 +105,10 @@ importers:
         version: 2.0.29(typescript@5.5.4)
 
 packages:
+
+  '@ai-sdk/provider@2.0.0':
+    resolution: {integrity: sha512-6o7Y2SeO9vFKB8lArHXehNuusnpddKPk7xqL7T2/b+OvXMRIXUO1rR4wcv1hAFUAT9avGZshty3Wlua/XA7TvA==}
+    engines: {node: '>=18'}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -165,13 +169,27 @@ packages:
   '@caido/quickjs-types@0.17.2':
     resolution: {integrity: sha512-5kcucGORMNEbcdU91yKLYZG/TFDqsO6XmCZ1TnU6V48E61mmqrJg6kjrfOFP1WOugDm+ZcGd/Su3p3XkFXfaPg==}
 
+  '@caido/quickjs-types@0.20.0':
+    resolution: {integrity: sha512-T3OTw3GjGPtMxASFHZro86Jce+9TVNNbUz2fQCaCbP+Yh+olt5mwTMLNz8uLFo4icgc1WPfyimfFSN23za9UXw==}
+
   '@caido/sdk-backend@0.46.0':
     resolution: {integrity: sha512-peUKW/4Nrw9WVxIahc+6KrVtxA7vsbpuJqOoBxudxq7tQJ+cV9IEqzvYoFFo8KlnrTkeUQUJvd0W4WsM3HgxEg==}
+
+  '@caido/sdk-backend@0.51.1':
+    resolution: {integrity: sha512-BvDCcbxXCDcsCvqntpeoKJ475DUZ7H7TXZjIPcoa5WU+ynBpvnDpeoxVoy1UBYQKz9L5ld8MQ3S5oY9wEoNHqQ==}
 
   '@caido/sdk-frontend@0.46.0':
     resolution: {integrity: sha512-yCSxRKiSXMVjbyvdrB2eTKCLS8ArcbSsYUgyIhGum3AmvuHwLX255mV5JV+M0FUpC1jdKaP9zhSSZandgPRqrg==}
     peerDependencies:
       '@codemirror/view': ^6.0.0
+
+  '@caido/sdk-frontend@0.51.2-beta.15':
+    resolution: {integrity: sha512-1slYDvfIgYevXEFtTJecCK6oZ+lOXAAlAdrjftnPb2c9pRNmDcFHIRHXnn0QEyAiYEUKQFpDshIqNoFiNcNCDg==}
+    peerDependencies:
+      '@ai-sdk/provider': ^2.0.0
+      '@codemirror/state': ^6.0.0
+      '@codemirror/view': ^6.0.0
+      vue: ^3.0.0
 
   '@caido/sdk-shared@0.1.1':
     resolution: {integrity: sha512-JAV5ajUqxZdXYPTmDEvIKBZon8I5uHq44ATj0Nj3BVpllRDUGY9kcBd+PXMD50+3lv1CvhR3/f6q24T0+4aVJQ==}
@@ -665,6 +683,9 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
+  '@types/web-bluetooth@0.0.20':
+    resolution: {integrity: sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==}
+
   '@vitejs/plugin-vue@5.2.1':
     resolution: {integrity: sha512-cxh314tzaWwOLqVes2gnnCtvBDcM1UMdn+iFR+UjAn411dPT3tOmqrJjbMd7koZpMAmBM/GqeV4n9ge7JSiJJQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -729,6 +750,15 @@ packages:
 
   '@vue/shared@3.5.13':
     resolution: {integrity: sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==}
+
+  '@vueuse/core@10.11.1':
+    resolution: {integrity: sha512-guoy26JQktXPcz+0n3GukWIy/JDNKti9v6VEMu6kV2sYBsWuGiTU8OWdg+ADfUbHg3/3DlqySDe7JmdHrktiww==}
+
+  '@vueuse/metadata@10.11.1':
+    resolution: {integrity: sha512-IGa5FXd003Ug1qAZmyE8wF3sJ81xGLSqTqtQ6jaVfkeZ4i5kS2mwQF61yhVqojRnenVew5PldLyRgvdl4YYuSw==}
+
+  '@vueuse/shared@10.11.1':
+    resolution: {integrity: sha512-LHpC8711VFZlDaYUXEBbFBCQ7GS3dVU9mjOhhMhXP6txTV4EhYQg/KGnQuvt/sPAtoUKq7VVUnL6mVtFoL42sA==}
 
   accepts@2.0.0:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
@@ -1353,6 +1383,9 @@ packages:
 
   json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
+
+  json-schema@0.4.0:
+    resolution: {integrity: sha512-es94M3nTIfsEPisRafak+HDLfHXnKBhV3vU5eqPcS3flIWqcxJWgXHXiey3YrpaNsanY5ei1VoYEbOzijuq9BA==}
 
   jspdf@3.0.1:
     resolution: {integrity: sha512-qaGIxqxetdoNnFQQXxTKUD9/Z7AloLaw94fFsOiJMxbfYdBbrBuhWmbzI8TVjrw7s3jBY1PFHofBKMV/wZPapg==}
@@ -1988,6 +2021,17 @@ packages:
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
+  vue-demi@0.14.10:
+    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   vue-tsc@2.0.29:
     resolution: {integrity: sha512-MHhsfyxO3mYShZCGYNziSbc63x7cQ5g9kvijV7dRe1TTXBRLxXyL0FnXWpUF1xII2mJ86mwYpYsUmMwkmerq7Q==}
     hasBin: true
@@ -2070,6 +2114,10 @@ packages:
         optional: true
 
 snapshots:
+
+  '@ai-sdk/provider@2.0.0':
+    dependencies:
+      json-schema: 0.4.0
 
   '@alloc/quick-lru@5.2.0': {}
 
@@ -2168,14 +2216,28 @@ snapshots:
 
   '@caido/quickjs-types@0.17.2': {}
 
+  '@caido/quickjs-types@0.20.0': {}
+
   '@caido/sdk-backend@0.46.0':
     dependencies:
       '@caido/quickjs-types': 0.17.2
       '@caido/sdk-shared': 0.1.1
 
+  '@caido/sdk-backend@0.51.1':
+    dependencies:
+      '@caido/quickjs-types': 0.20.0
+      '@caido/sdk-shared': 0.1.1
+
   '@caido/sdk-frontend@0.46.0(@codemirror/view@6.28.1)':
     dependencies:
       '@codemirror/view': 6.28.1
+
+  '@caido/sdk-frontend@0.51.2-beta.15(@ai-sdk/provider@2.0.0)(@codemirror/state@6.5.2)(@codemirror/view@6.28.1)(vue@3.4.37(typescript@5.5.4))':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.28.1
+      vue: 3.4.37(typescript@5.5.4)
 
   '@caido/sdk-shared@0.1.1': {}
 
@@ -2584,6 +2646,8 @@ snapshots:
   '@types/trusted-types@2.0.7':
     optional: true
 
+  '@types/web-bluetooth@0.0.20': {}
+
   '@vitejs/plugin-vue@5.2.1(vite@6.0.7(jiti@2.4.2)(yaml@2.7.1))(vue@3.4.37(typescript@5.5.4))':
     dependencies:
       vite: 6.0.7(jiti@2.4.2)(yaml@2.7.1)
@@ -2687,6 +2751,25 @@ snapshots:
   '@vue/shared@3.4.37': {}
 
   '@vue/shared@3.5.13': {}
+
+  '@vueuse/core@10.11.1(vue@3.4.37(typescript@5.5.4))':
+    dependencies:
+      '@types/web-bluetooth': 0.0.20
+      '@vueuse/metadata': 10.11.1
+      '@vueuse/shared': 10.11.1(vue@3.4.37(typescript@5.5.4))
+      vue-demi: 0.14.10(vue@3.4.37(typescript@5.5.4))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
+  '@vueuse/metadata@10.11.1': {}
+
+  '@vueuse/shared@10.11.1(vue@3.4.37(typescript@5.5.4))':
+    dependencies:
+      vue-demi: 0.14.10(vue@3.4.37(typescript@5.5.4))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
 
   accepts@2.0.0:
     dependencies:
@@ -3350,6 +3433,8 @@ snapshots:
 
   json-schema-traverse@1.0.0: {}
 
+  json-schema@0.4.0: {}
+
   jspdf@3.0.1:
     dependencies:
       '@babel/runtime': 7.27.1
@@ -3966,6 +4051,10 @@ snapshots:
       yaml: 2.7.1
 
   vscode-uri@3.1.0: {}
+
+  vue-demi@0.14.10(vue@3.4.37(typescript@5.5.4)):
+    dependencies:
+      vue: 3.4.37(typescript@5.5.4)
 
   vue-tsc@2.0.29(typescript@5.5.4):
     dependencies:

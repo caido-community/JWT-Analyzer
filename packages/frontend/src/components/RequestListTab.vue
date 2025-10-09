@@ -232,14 +232,14 @@ async function viewRequestDetails(id: string) {
   try {
     const response = await sdk.backend.getRequest(id);
     if (response.kind === "Success" && response.value) {
-      console.log("[JWT Analyzer] Loaded request details:", response.value);
+      // Log:("[JWT Analyzer] Loaded request details:", response.value);
       // Update the request in the store to ensure it has the latest data
       requestStore.addRequest(response.value);
     } else {
-      console.error("[JWT Analyzer] Failed to load request details:", response.error);
+      // Error:("[JWT Analyzer] Failed to load request details:", response.error);
     }
   } catch (error) {
-    console.error("[JWT Analyzer] Error loading request details:", error);
+    // Error:("[JWT Analyzer] Error loading request details:", error);
   }
   
   showModal.value = true;
@@ -254,20 +254,20 @@ async function refreshRequests() {
     requestStore.setLoading(true);
     requestStore.setError(null);
     
-    console.log("[JWT Analyzer] Refreshing requests...");
+    // Log:("[JWT Analyzer] Refreshing requests...");
     const response = await sdk.backend.getRequests();
-    console.log("[JWT Analyzer] getRequests response:", response);
+    // Log:("[JWT Analyzer] getRequests response:", response);
     
     if (response.kind === "Success" && Array.isArray(response.value)) {
-      console.log(`[JWT Analyzer] Loaded ${response.value.length} requests`);
+      // Log:(`[JWT Analyzer] Loaded ${response.value.length} requests`);
       requestStore.setRequests(response.value || []);
     } else {
-      console.error("[JWT Analyzer] Failed to load requests:", response.error || "Unknown error");
+      // Error:("[JWT Analyzer] Failed to load requests:", response.error || "Unknown error");
       requestStore.setError(response.error || "Failed to load requests");
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("[JWT Analyzer] Error loading requests:", error);
+    // Error:("[JWT Analyzer] Error loading requests:", error);
     requestStore.setError(`Error loading requests: ${errorMessage}`);
   } finally {
     requestStore.setLoading(false);

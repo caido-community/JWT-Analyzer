@@ -1,5 +1,6 @@
 <template>
-  <div class="help-container h-full overflow-y-auto">
+  <div class="h-full flex flex-col">
+    <div class="flex-1 min-h-0 overflow-auto p-4">
     <!-- Help & Documentation Card -->
     <Card class="mb-4 bg-gray-50 dark:bg-surface-700">
       <template #title>
@@ -15,7 +16,7 @@
           <!-- Introduction Section -->
           <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 border-l-4 border-blue-500">
             <h3 class="text-xl font-semibold mb-2">Welcome to JWT Analyzer</h3>
-            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p class="leading-relaxed">
               This knowledge base will help you understand how to use all features of the JWT Analyzer plugin effectively.
               Learn how to analyze, decode, edit and secure JWT tokens in your penetration testing workflow.
             </p>
@@ -84,7 +85,26 @@
                 </ol>
               </div>
             </div>
-            
+          </div>
+
+          <!-- JWT View Mode Section (NEW) - Full Width -->
+          <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-6">
+            <div class="flex items-center mb-3">
+              <span class="tab-icon text-xl mr-2">
+                <i class="pi pi-eye"></i>
+              </span>
+              <h3 class="text-lg font-bold">JWT View Mode</h3>
+              <span class="ml-2 text-xs bg-primary-600 text-white px-2 py-0.5 rounded">NEW</span>
+            </div>
+            <p class="text-sm">
+              The JWT View Mode is integrated directly into Caido's HTTP History for viewing JWT tokens inline with requests. 
+              Open any request containing a JWT token in HTTP History, click on the "JWT" tab in the request viewer, and instantly view decoded token header and payload with syntax highlighting. 
+              Click "Send to JWT Analyzer" to perform full security analysis on the tokens you find.
+            </p>
+          </div>
+
+          <!-- Second Grid Row: Token Details and JWT Editor -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <!-- Token Details Section -->
             <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
               <div class="flex items-center mb-3">
@@ -243,7 +263,7 @@
           <div class="flex items-center justify-between mb-6">
             <div>
               <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">JWT Analyzer</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Version 1.0.1</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Version 1.0.2</p>
             </div>
             <a
               href="https://github.com/amrelsagaei/JWT-Analyzer"
@@ -257,7 +277,7 @@
           </div>
 
           <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 mb-6 border-l-4 border-blue-500">
-            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p class="leading-relaxed">
               JWT Analyzer is a powerful Caido plugin designed to help security professionals analyze and assess JWT tokens in real-time. 
               It provides comprehensive token analysis, risk assessment, and detailed token information directly within your Caido workflow.
             </p>
@@ -270,7 +290,7 @@
                 <a 
                   href="#"
                   @click.prevent="copyToClipboard('https://www.linkedin.com/in/amrelsagaei')" 
-                  class="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                  class="flex items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                 >
                   <i class="pi pi-linkedin mr-2"></i>
                   LinkedIn
@@ -278,30 +298,26 @@
                 <a 
                   href="#"
                   @click.prevent="copyToClipboard('info@amrelsagaei.com')"
-                  class="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                  class="flex items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                 >
                   <i class="pi pi-envelope mr-2"></i>
                   Email
                 </a>
               </div>
-              <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                Made with ❤️ by <a href="#" @click.prevent="copyToClipboard('https://amrelsagaei.com')"><strong class="text-gray-700 dark:text-gray-300 ml-1">Amr Elsagaei</strong></a>
+              <div class="flex items-center text-sm">
+                Made with ❤️ by <a href="#" @click.prevent="copyToClipboard('https://amrelsagaei.com')"><strong class="ml-1">Amr Elsagaei</strong></a>
               </div>
             </div>
           </div>
         </div>
       </template>
     </Card>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import Card from 'primevue/card';
-import Button from 'primevue/button';
-import { useSDK } from '../plugins/sdk';
-
-const sdk = useSDK();
 
 // Methods
 const copyToClipboard = (text: string) => {

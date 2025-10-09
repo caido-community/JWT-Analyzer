@@ -7,14 +7,14 @@
   },
   "dependencies": {
     "@caido/primevue": "0.1.2",
+    "@vueuse/core": "^10.5.0",
     "jspdf": "^3.0.1",
     "primevue": "4.1.0",
     "vue": "3.4.37"
   },
   "devDependencies": {
-    "@caido/sdk-backend": "^0.46.0",
-    "@caido/sdk-frontend": "^0.46.0",
-    "@codemirror/view": "6.28.1",
+    "@caido/sdk-backend": "^0.51.0",
+    "@caido/sdk-frontend": "^0.51.2-beta.0",
     "backend": "workspace:*",
     "vue-tsc": "2.0.29"
   }

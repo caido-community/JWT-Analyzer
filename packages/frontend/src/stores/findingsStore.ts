@@ -1,6 +1,20 @@
 import { FrontendSDK, Finding } from "../types";
 import { create } from "zustand";
 import type { StateCreator } from "zustand";
+import { createJWTStorageService } from "../services/storage";
+
+// Helper to save findings to SDK storage
+const saveToSDKStorage = async (findings: Finding[]) => {
+  try {
+    const sdk = (window as any).sdk as FrontendSDK;
+    if (sdk) {
+      const storageService = createJWTStorageService(sdk);
+      await storageService.saveFindings(findings);
+    }
+  } catch (error) {
+    // Silently handle storage errors
+  }
+};
 
 interface FindingsStore {
   findings: Finding[];
@@ -17,7 +31,7 @@ export const useFindingsStore = create<FindingsStore>((set, get) => ({
   selectedFindingId: null,
   
   addFinding: (finding: Finding) => {
-    console.log("[JWT Analyzer] Adding finding to store:", finding);
+    // Log:("[JWT Analyzer] Adding finding to store:", finding);
     set((state) => {
       // Check if finding already exists to prevent duplicates
       const exists = state.findings.some(f => f.id === finding.id);
@@ -28,12 +42,8 @@ export const useFindingsStore = create<FindingsStore>((set, get) => ({
           f.id === finding.id ? finding : f
         );
         
-        // Persist findings to localStorage
-        try {
-          localStorage.setItem('jwt_analyzer_findings', JSON.stringify(updatedFindings));
-        } catch (error) {
-          console.error("[JWT Analyzer] Error saving findings to localStorage:", error);
-        }
+        // Persist findings to SDK storage
+        saveToSDKStorage(updatedFindings);
         
         return {
           findings: updatedFindings
@@ -42,12 +52,8 @@ export const useFindingsStore = create<FindingsStore>((set, get) => ({
         // Add new finding
         const updatedFindings = [finding, ...state.findings];
         
-        // Persist findings to localStorage
-        try {
-          localStorage.setItem('jwt_analyzer_findings', JSON.stringify(updatedFindings));
-        } catch (error) {
-          console.error("[JWT Analyzer] Error saving findings to localStorage:", error);
-        }
+        // Persist findings to SDK storage
+        saveToSDKStorage(updatedFindings);
         
         return {
           findings: updatedFindings
@@ -57,14 +63,10 @@ export const useFindingsStore = create<FindingsStore>((set, get) => ({
   },
   
   setFindings: (findings: Finding[]) => {
-    console.log("[JWT Analyzer] Setting findings:", findings.length);
+    // Log:("[JWT Analyzer] Setting findings:", findings.length);
     
-    // Persist findings to localStorage
-    try {
-      localStorage.setItem('jwt_analyzer_findings', JSON.stringify(findings));
-    } catch (error) {
-      console.error("[JWT Analyzer] Error saving findings to localStorage:", error);
-    }
+    // Persist findings to SDK storage
+    saveToSDKStorage(findings);
     
     set({ findings });
   },
@@ -78,14 +80,10 @@ export const useFindingsStore = create<FindingsStore>((set, get) => ({
   },
   
   clearFindings: () => {
-    console.log("[JWT Analyzer] Clearing all findings");
+    // Log:("[JWT Analyzer] Clearing all findings");
     
-    // Clear findings from localStorage
-    try {
-      localStorage.removeItem('jwt_analyzer_findings');
-    } catch (error) {
-      console.error("[JWT Analyzer] Error removing findings from localStorage:", error);
-    }
+    // Clear findings from SDK storage
+    saveToSDKStorage([]);
     
     set({ findings: [] });
   }
@@ -93,21 +91,20 @@ export const useFindingsStore = create<FindingsStore>((set, get) => ({
 
 // Initialize event listeners for the findings store
 export const initializeFindingsEvents = (sdk: FrontendSDK) => {
-  console.log("[JWT Analyzer] Initializing findings events");
   
-  // Try to load findings from localStorage first
+  // Try to load findings from SDK storage first
   try {
-    const storedFindings = localStorage.getItem('jwt_analyzer_findings');
-    if (storedFindings) {
-      const parsedFindings = JSON.parse(storedFindings) as Finding[];
-      console.log(`[JWT Analyzer] Loaded ${parsedFindings.length} findings from localStorage`);
-      useFindingsStore.getState().setFindings(parsedFindings);
+    const storageService = createJWTStorageService(sdk);
+    const storedFindings = storageService.getFindings();
+    if (storedFindings && storedFindings.length > 0) {
+      // Log:(`[JWT Analyzer] Loaded ${storedFindings.length} findings from SDK storage`);
+      useFindingsStore.getState().setFindings(storedFindings);
     }
   } catch (error) {
-    console.error('[JWT Analyzer] Error loading findings from localStorage:', error);
+    // Error loading findings from SDK storage
   }
   
-  // Initialize by loading findings from Caido and merging with localStorage data
+  // Initialize by loading findings from Caido and merging with SDK storage data
   loadFindings(sdk, true);
   
   // Set up periodic refresh of findings to maintain them after Caido refresh
@@ -116,7 +113,7 @@ export const initializeFindingsEvents = (sdk: FrontendSDK) => {
   }, 30000); // Check every 30 seconds
 
   sdk.backend.onEvent("jwt:analyzed", (finding: Finding) => {
-    console.log("[JWT Analyzer] Received jwt:analyzed event with finding:", finding);
+    // Received JWT analysis event
     
     // When a new JWT is analyzed, add it to the store
     useFindingsStore.getState().addFinding(finding);
@@ -127,7 +124,7 @@ export const initializeFindingsEvents = (sdk: FrontendSDK) => {
     // Dispatch an event to notify other components about the new finding
     try {
       const event = new CustomEvent('jwt-finding-added', { detail: finding });
-      console.log("[JWT Analyzer] Dispatching jwt-finding-added event");
+      // Dispatching finding added event
       window.dispatchEvent(event);
     } catch (error) {
       console.error("[JWT Analyzer] Error dispatching jwt-finding-added event:", error);
@@ -139,7 +136,7 @@ export const initializeFindingsEvents = (sdk: FrontendSDK) => {
 async function loadFindings(sdk: FrontendSDK, forceUpdate: boolean = false) {
   if (sdk && sdk.findings && sdk.findings.getAll) {
     try {
-      console.log("[JWT Analyzer] Loading findings from Caido...");
+      // Loading findings from Caido
       const allFindings = await sdk.findings.getAll();
       
       // Filter to only include JWT findings
@@ -166,7 +163,7 @@ async function loadFindings(sdk: FrontendSDK, forceUpdate: boolean = false) {
           JSON.stringify(mergedFindings.map(f => f.id).sort()) !== 
           JSON.stringify(existingFindings.map(f => f.id).sort())) {
         
-        console.log(`[JWT Analyzer] Loaded ${mergedFindings.length} JWT findings after merging`);
+        // Log:(`[JWT Analyzer] Loaded ${mergedFindings.length} JWT findings after merging`);
         useFindingsStore.getState().setFindings(mergedFindings);
         
         // Dispatch event to update findings in other components
@@ -179,7 +176,6 @@ async function loadFindings(sdk: FrontendSDK, forceUpdate: boolean = false) {
           console.error("[JWT Analyzer] Error dispatching jwt-findings-refreshed event:", error);
         }
       } else {
-        console.log(`[JWT Analyzer] No changes in findings detected (${mergedFindings.length} findings)`);
       }
     } catch (error) {
       console.error('[JWT Analyzer] Error fetching findings:', error);

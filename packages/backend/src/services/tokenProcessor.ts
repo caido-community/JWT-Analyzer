@@ -103,7 +103,7 @@ export async function processToken(
     });
     
     // Log success to console
-    sdk.console.log(`JWT token detected in ${source} with ${risks.length} risks`);
+    // Backend log:(`JWT token detected in ${source} with ${risks.length} risks`);
 
     // Return the finding
     return finding;

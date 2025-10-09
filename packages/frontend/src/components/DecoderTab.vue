@@ -1,36 +1,46 @@
 <template>
-  <div class="decoder-container h-full overflow-y-auto">
-    <div class="p-4">
-      <Card class="bg-gray-50 dark:bg-surface-700">
+  <div class="h-full flex flex-col overflow-auto">
+    <!-- Input Section - Content-based height -->
+    <div class="p-4 pb-2">
+      <Card class="bg-gray-50 dark:bg-surface-700" :pt="{ body: { class: 'p-0' }, content: { class: 'flex flex-col' } }">
       <template #title>
-        <div class="flex items-center">
+        <div class="flex items-center px-4 py-2">
           <span class="tab-icon">
-            <i class="pi pi-lock-open"></i>
+            <i class="pi pi-lock-open text-base"></i>
           </span>
-          <span>Decode JWT Token</span>
+          <span class="text-base">Decode JWT Token</span>
         </div>
       </template>
       <template #content>
-        <div class="mb-4">
-          <label for="jwt-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Enter JWT Token
-          </label>
-          <div class="flex">
-            <InputText id="jwt-input" v-model="manualToken" class="flex-1 mr-2" 
-              placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
-            <Button icon="pi pi-search" label="Decode" @click="decodeManualToken" :disabled="!isValidToken" />
+        <div class="p-4">
+          <div>
+            <label for="jwt-input" class="block text-sm font-medium mb-2">
+              Enter JWT Token
+            </label>
+            <div class="flex gap-2">
+              <InputText id="jwt-input" v-model="manualToken" class="flex-1" 
+                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
+              <Button icon="pi pi-search" label="Decode" @click="decodeManualToken" :disabled="!isValidToken" />
+            </div>
+            <small v-if="manualToken && !isValidToken" class="text-red-500 mt-1 block">
+              Invalid JWT format. Please enter a valid token.
+            </small>
           </div>
-          <small v-if="manualToken && !isValidToken" class="text-red-500">
-            Invalid JWT format. Please enter a valid token.
-          </small>
-          </div>
+        </div>
         </template>
       </Card>
-        </div>
+    </div>
 
-    <!-- Token Tabs section -->
-    <div v-if="decodedTokens.length > 0" class="token-tabs bg-gray-100 dark:bg-surface-700 p-2 mx-4 rounded-t-lg mb-2 flex items-center overflow-x-auto">
-      <TabView v-model:activeIndex="activeTokenTab" class="token-tabs-inner w-full">
+    <!-- Results Section - Takes remaining height -->
+    <div v-if="decodedTokens.length > 0" class="flex-1 min-h-0 p-4 pt-2">
+      <Card class="h-full" :pt="{ body: { class: 'h-full p-0 flex flex-col' }, content: { class: 'h-full flex flex-col p-0' } }" style="border-radius: 8px; border: none; background: transparent;">
+        <template #title>
+          <div class="px-4 py-3">
+            <span>Decoded Tokens</span>
+          </div>
+        </template>
+        <template #content>
+      <TabView v-model:activeIndex="activeTokenTab" class="h-full flex flex-col" :pt="{ panelContainer: { class: 'h-full flex-1' }, panels: { class: 'h-full flex-1' } }">
         <TabPanel v-for="(token, index) in decodedTokens" :key="token.id">
           <template #header>
             <div class="token-tab-header flex items-center">
@@ -46,10 +56,10 @@
             </div>
           </template>
           
-          <!-- Token Content -->
-          <div class="token-content p-4">
+          <!-- Token Content - constrained to container -->
+          <div class="h-full p-4 overflow-y-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <Card class="bg-white dark:bg-surface-800">
+            <Card class="bg-white dark:bg-surface-800" style="border-radius: 8px; border: 1px solid rgba(209, 213, 219, 0.3);">
               <template #title>
                 <div class="flex items-center">
                   <span class="tab-icon">
@@ -65,7 +75,7 @@
               </template>
             </Card>
 
-            <Card class="bg-white dark:bg-surface-800">
+            <Card class="bg-white dark:bg-surface-800" style="border-radius: 8px; border: 1px solid rgba(209, 213, 219, 0.3);">
               <template #title>
                 <div class="flex items-center">
                   <span class="tab-icon">
@@ -82,7 +92,7 @@
             </Card>
           </div>
 
-          <Card class="bg-white dark:bg-surface-800">
+          <Card class="bg-white dark:bg-surface-800" style="border-radius: 8px; border: 1px solid rgba(209, 213, 219, 0.3);">
             <template #title>
               <div class="flex items-center">
                 <span class="tab-icon">
@@ -139,15 +149,18 @@
           </div>
         </TabPanel>
       </TabView>
-        </div>
-        
-    <div v-if="decodedTokens.length === 0 && manualToken === ''" class="flex flex-col items-center justify-center py-10 text-gray-500 h-full">
-          <span class="block text-4xl mb-3">
-            <i class="pi pi-lock-open text-4xl"></i>
-          </span>
-          <h3 class="text-xl font-semibold">Enter a JWT Token</h3>
-          <p class="mt-2 text-center">Paste a JWT token above to decode and analyze its contents</p>
-        </div>
+        </template>
+      </Card>
+    </div>
+    
+    <!-- Empty State -->
+    <div v-else class="flex-1 flex flex-col items-center justify-center p-4">
+      <span class="block text-4xl mb-3 text-gray-400 dark:text-gray-500">
+        <i class="pi pi-lock-open text-4xl"></i>
+      </span>
+      <h3 class="text-xl font-semibold text-gray-300 dark:text-gray-400">Enter a JWT Token</h3>
+      <p class="mt-2 text-center text-gray-400 dark:text-gray-500">Paste a JWT token above to decode and analyze its contents</p>
+    </div>
     
     <!-- Rename Modal -->
     <Dialog v-model:visible="showRenameModal" header="Rename Tab" :style="{ width: '30vw' }" :modal="true">
@@ -189,6 +202,7 @@ import Dialog from 'primevue/dialog';
 import { useSDK } from '../plugins/sdk';
 import { analyzeJWTSecurity, decodeJWT } from '../utils/jwt';
 import type { JWTHeader, JWTPayload, JWTRisk } from '../types';
+import { createJWTStorageService } from '../services/storage';
 
 // Define token tab interface
 interface DecodedToken {
@@ -204,6 +218,7 @@ interface DecodedToken {
 }
 
 const sdk = useSDK();
+const storageService = createJWTStorageService(sdk);
 const manualToken = ref('');
 const decodedTokens = ref<DecodedToken[]>([]);
 const activeTokenTab = ref(0);
@@ -218,8 +233,8 @@ const MAX_TOKEN_TABS = 10;
 
 // Emit events to parent
 const emit = defineEmits<{
-  (e: 'viewDetails', token: string, header: JWTHeader, payload: JWTPayload, analysis: any): void;
-  (e: 'sendToEditor', token: string): void;
+  (e: 'view-details-decoder', token: string, header: JWTHeader, payload: JWTPayload, analysis: any, navigate?: boolean): void;
+  (e: 'send-to-editor', token: string): void;
 }>();
 
 // Validate JWT format
@@ -267,8 +282,8 @@ function decodeManualToken() {
     const decoded = decodeJWT(manualToken.value);
     
     if (!decoded || !decoded.header || !decoded.payload) {
-      if (sdk?.notifications) {
-        sdk.notifications.error('Failed to decode token');
+      if (sdk?.window?.showToast) {
+        sdk.window.showToast('Failed to decode token', { variant: 'error' });
       }
       return;
     }
@@ -295,9 +310,18 @@ function decodeManualToken() {
     
   } catch (error) {
     console.error('Error decoding token:', error);
-    if (sdk?.notifications) {
-      sdk.notifications.error('Error processing token');
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Error processing token', { variant: 'error' });
     }
+  }
+}
+
+// Save tokens to SDK storage
+async function saveTokensToStorage() {
+  try {
+    await storageService.saveTokenDetailsTabs(decodedTokens.value);
+  } catch (error) {
+    console.error('Error saving tokens to storage:', error);
   }
 }
 
@@ -322,6 +346,9 @@ function addTokenTab(token: DecodedToken): void {
     // Set the newly added tab as active
     activeTokenTab.value = decodedTokens.value.length - 1;
   }
+  
+  // Save to SDK storage 
+  saveTokensToStorage();
 }
 
 // Close a token tab
@@ -333,6 +360,9 @@ function closeTokenTab(index: number): void {
   if (index <= activeTokenTab.value) {
     activeTokenTab.value = Math.max(0, activeTokenTab.value - 1);
   }
+  
+  // Save to SDK storage
+  saveTokensToStorage();
 }
 
 // Open rename dialog
@@ -353,13 +383,16 @@ function cancelRename(): void {
 function saveRename(): void {
   if (tabToRename.value >= 0 && tabToRename.value < decodedTokens.value.length) {
     decodedTokens.value[tabToRename.value].customName = newTabName.value;
-    if (sdk?.notifications) {
-      sdk.notifications.success('Tab renamed successfully');
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Tab renamed successfully', { variant: 'success' });
     }
   }
   showRenameModal.value = false;
   tabToRename.value = -1;
   newTabName.value = '';
+  
+  // Save to SDK storage
+  saveTokensToStorage();
 }
 
 function viewTokenDetails(token: DecodedToken) {
@@ -370,25 +403,23 @@ function viewTokenDetails(token: DecodedToken) {
   
   // Emit event to parent component to switch to Token Details tab
   // Add navigate=true to ensure it navigates to the Token Details tab
-  emit('viewDetails', token.token, header, payload, analysis, true);
+  emit('view-details-decoder', token.token, header, payload, analysis, true);
   
   // Also create a finding if it doesn't exist yet
   submitToBackend(token.token);
   
   // Show success toast notification
-  if (sdk?.notifications) {
-    sdk.notifications.success('Token details view opened');
+  if (sdk?.window?.showToast) {
+    sdk.window.showToast('Token details view opened', { variant: 'success' });
   }
 }
 
 function sendToJWTEditor(token: DecodedToken) {
   if (token) {
-    // Emit event to App component to handle navigation to JWT Editor
-    emit('sendToEditor', token.token);
+    emit('send-to-editor', token.token);
     
-    // Show toast notification
-    if (sdk?.notifications) {
-      sdk.notifications.success('Token sent to JWT Editor');
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Opening JWT Editor with token', { variant: 'success' });
     }
   }
 }
@@ -396,7 +427,9 @@ function sendToJWTEditor(token: DecodedToken) {
 function submitToBackend(token: string) {
   // Analyze token directly with backend
   if (sdk && sdk.backend && sdk.backend.analyzeJWT) {
-    sdk.notifications?.info('Sending token to backend for analysis...');
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Sending token to backend for analysis...', { variant: 'info' });
+    }
     
     sdk.backend.analyzeJWT({
       token,
@@ -409,13 +442,29 @@ function submitToBackend(token: string) {
 }
 
 onMounted(() => {
+  // Load saved decoded tokens from SDK storage
+  try {
+    const savedTokens = storageService.getTokenDetailsTabs();
+    if (savedTokens && Array.isArray(savedTokens)) {
+      decodedTokens.value = savedTokens.map((token: any) => ({
+        ...token,
+        id: token.id || `token-${Date.now()}-${Math.random()}`
+      }));
+    }
+  } catch (error) {
+    console.error('Error loading saved tokens:', error);
+  }
+  
   // Add listener for the set-decoder-token event
   window.addEventListener('set-decoder-token', handleSetDecoderToken);
+  // Add listener for tokens from dashboard
+  window.addEventListener('add-token-to-decoder', handleAddTokenToDecoder);
 });
 
 onUnmounted(() => {
   // Remove listener when component is unmounted
   window.removeEventListener('set-decoder-token', handleSetDecoderToken);
+  window.removeEventListener('add-token-to-decoder', handleAddTokenToDecoder);
 });
 
 // Handler for receiving tokens from other components
@@ -424,6 +473,15 @@ function handleSetDecoderToken(event: Event) {
   if (customEvent.detail && customEvent.detail.token) {
     manualToken.value = customEvent.detail.token;
     // Trigger token analysis
+    decodeManualToken();
+  }
+}
+
+// Handler for tokens from dashboard
+function handleAddTokenToDecoder(event: Event) {
+  const customEvent = event as CustomEvent;
+  if (customEvent.detail && customEvent.detail.token) {
+    manualToken.value = customEvent.detail.token;
     decodeManualToken();
   }
 }
@@ -481,25 +539,32 @@ function handleSetDecoderToken(event: Event) {
 .token-tabs {
   position: relative;
   height: auto;
-  min-height: 40px;
   overflow-x: auto !important;
+}
+
+:deep(.token-tabs-inner .p-tabview-nav-container) {
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
 }
 
 :deep(.token-tabs-inner .p-tabview-nav) {
   border-bottom: none;
   background: transparent;
+  padding: 0;
+  margin: 0;
   overflow-x: auto !important;
 }
 
 :deep(.token-tabs-inner .p-tabview-nav-link) {
   padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  margin-right: 0.25rem;
+  border-radius: 6px 6px 0 0;
+  margin-right: 0.125rem;
   font-size: 0.875rem;
-  border: 1px solid rgba(209, 213, 219, 0.5);
+  border: 1px solid rgba(209, 213, 219, 0.3);
+  border-bottom: none;
 }
 
-:deep(.token-tabs-inner .p-tabview-selected) {
+:deep(.token-tabs-inner .p-tabview-selected .p-tabview-nav-link) {
   border-color: rgba(99, 102, 241, 0.5);
 }
 

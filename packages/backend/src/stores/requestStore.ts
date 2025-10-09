@@ -45,17 +45,8 @@ export class RequestStore {
         timestamp: new Date().toISOString()
       });
 
-      this.sdk.console.log(`Request ${request.id} added to store with raw HTTP format`);
-      
-      // Emit event that request was added
-      try {
-        this.sdk.events.emit("request:updated", {
-          requestId: request.id,
-          hasResponse: false
-        });
-      } catch (error) {
-        this.sdk.console.error("Error emitting request:updated event:", error);
-      }
+      // Note: Direct event emission removed to simplify architecture
+      // Events are now handled through proper API calls
     } catch (error) {
       this.sdk.console.error("Error adding request to store:", error);
     }
@@ -91,17 +82,8 @@ export class RequestStore {
         this.requests.set(requestId, storedData);
       }
 
-      this.sdk.console.log(`Response for request ${requestId} added to store with raw HTTP format`);
-      
-      // Emit event that response was added
-      try {
-        this.sdk.events.emit("request:updated", {
-          requestId: requestId,
-          hasResponse: true
-        });
-      } catch (error) {
-        this.sdk.console.error("Error emitting request:updated event:", error);
-      }
+      // Note: Direct event emission removed to simplify architecture
+      // Events are now handled through proper API calls
     } catch (error) {
       this.sdk.console.error("Error adding response to store:", error);
     }
@@ -153,7 +135,6 @@ export class RequestStore {
   public async clearRequests(): Promise<void> {
     try {
       this.requests.clear();
-      this.sdk.console.log("All requests cleared from store");
     } catch (error) {
       this.sdk.console.error("Error clearing requests:", error);
     }
@@ -262,7 +243,6 @@ export class RequestStore {
         raw += typeof request.body === 'string' ? request.body : JSON.stringify(request.body);
       }
       
-      this.sdk.console.log(`Formatted raw HTTP request (${raw.length} bytes)`);
       return raw;
     } catch (error) {
       this.sdk.console.error("Error formatting raw HTTP request:", error);
@@ -304,7 +284,6 @@ export class RequestStore {
         raw += typeof response.body === 'string' ? response.body : JSON.stringify(response.body);
       }
       
-      this.sdk.console.log(`Formatted raw HTTP response (${raw.length} bytes)`);
       return raw;
     } catch (error) {
       this.sdk.console.error("Error formatting raw HTTP response:", error);

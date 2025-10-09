@@ -46,56 +46,7 @@ export interface CaidoSDK {
   };
 }
 
-// Create a mock SDK for development
-const createMockSDK = (): CaidoSDK => {
-  return {
-    findings: {
-      onSelect: (findingType: string, callback: (finding: any) => void) => {
-        console.log(`Registered callback for finding type: ${findingType}`);
-      },
-      create: async (finding: any) => {
-        console.log("Created finding:", finding);
-      },
-      getAll: async () => {
-        console.log("Getting all findings");
-        return [];
-      }
-    },
-    navigation: {
-      addPage: (path: string, options: { body: HTMLElement }) => {
-        console.log(`Added page at path: ${path}`);
-      }
-    },
-    sidebar: {
-      registerItem: (label: string, path: string) => {
-        console.log(`Registered sidebar item: ${label} -> ${path}`);
-      }
-    },
-    contextMenu: {
-      register: (config: any) => {
-        console.log("Registered context menu:", config);
-      },
-      _handlers: []
-    },
-    notifications: {
-      success: (message: string) => console.log(`Success: ${message}`),
-      error: (message: string) => console.error(`Error: ${message}`),
-      warning: (message: string) => console.warn(`Warning: ${message}`),
-      info: (message: string) => console.info(`Info: ${message}`)
-    },
-    window: {
-      showToast: (message: string, options) => {
-        const variant = options?.variant || "info";
-        console.log(`Toast (${variant}): ${message}`);
-      }
-    },
-    console: {
-      log: (message: string) => console.log(message),
-      error: (message: string) => console.error(message),
-      warn: (message: string) => console.warn(message)
-    }
-  };
-};
+// Remove mock SDK - not needed in production
 
 // Global SDK instance
 let sdkInstance: CaidoSDK | null = null;
@@ -106,15 +57,9 @@ export const initSDK = () => {
     // Try to access Caido SDK if available
     if (window.caido && window.caido.sdk) {
       sdkInstance = window.caido.sdk;
-    } else {
-      // Use mock SDK for development
-      sdkInstance = createMockSDK();
-      console.log('Using mock SDK for development');
     }
   } catch (error) {
     console.error('Failed to initialize SDK:', error);
-    // Fallback to mock SDK
-    sdkInstance = createMockSDK();
   }
   
   return sdkInstance;

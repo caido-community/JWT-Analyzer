@@ -1,22 +1,14 @@
 import type { SDK } from "caido:plugin";
 import { API, BackendEvents } from "./types";
 import { analyzeJWT } from "./api/analyzer";
-import { handleRequestInterceptor, handleResponseInterceptor, handleContextMenu } from "./services/eventHandlers";
-// Use a type assertion to handle missing module
-// @ts-ignore - Module might not exist at type checking time but will be available at runtime
+import { handleRequestInterceptor, handleResponseInterceptor } from "./services/eventHandlers";
+// @ts-ignore
 import { getRequests, getRequest, clearRequests } from "./api/requests";
 import { RequestStore } from "./stores/requestStore";
 
-/**
- * Initialize the plugin
- */
 export function init(sdk: SDK<API, BackendEvents>) {
-  sdk.console.log("JWT Analyzer plugin initializing...");
-
-  // Initialize the RequestStore with the SDK
   RequestStore.getInstance(sdk);
   
-  // Register HTTP interceptors
   sdk.events.onInterceptRequest((sdk, request) => {
     try {
       handleRequestInterceptor(sdk, request);
@@ -33,15 +25,10 @@ export function init(sdk: SDK<API, BackendEvents>) {
     }
   });
   
-  // Register API methods
   sdk.api.register("analyzeJWT", analyzeJWT);
   sdk.api.register("getRequests", getRequests);
   sdk.api.register("getRequest", getRequest);
   sdk.api.register("clearRequests", clearRequests);
-  
-  // Log successful initialization
-  sdk.console.log("JWT Analyzer plugin initialized successfully!");
 }
 
-// Re-export types
 export type { API, BackendEvents };

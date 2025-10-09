@@ -58,12 +58,23 @@ JWT Analyzer is a comprehensive security tool designed for penetration testers a
 </details>
 
 <details>
+<summary><b>JWT View Mode (NEW!)</b></summary>
+<br>
+
+- **Inline Token Viewing:** View JWT tokens directly within Caido's HTTP History
+- **Automatic Detection:** Instantly see when requests contain JWT tokens
+- **Quick Analysis:** Decode header and payload inline with syntax highlighting
+- **One-Click Analysis:** Send tokens to JWT Analyzer for full security analysis
+</details>
+
+<details>
 <summary><b>Security Testing Tools</b></summary>
 <br>
 
 - **JWT Token Editor:** Manipulate token content and sign with different algorithms
 - **Attack Simulation Tools:** Ready-to-use attacks including algorithm switching, 'none' algorithm, and key injection
 - **Key Management:** Generate, import and use custom keys for token signing
+- **Cryptographic Key Generation:** Full support for HS256/384/512, RS256/384/512, PS256/384/512, and ES256/384/512 algorithms
 </details>
 
 <details>

@@ -68,31 +68,23 @@ export async function analyzeRequestJWT(
  * Extract JWT tokens from request headers or body
  */
 export function extractJWTFromRequest(request: any): string | null {
-  console.log("[JWT Analyzer] Extracting JWT from request:", request);
-
   try {
     // Check if request is null or undefined
     if (!request) {
-      console.warn("[JWT Analyzer] Request is null or undefined");
-      showNotification("Request is null or undefined", "warn");
       return null;
     }
-    
-    // DEBUG: Log the keys available on the request object to help understand its structure
-    console.log("[JWT Analyzer] Request object keys:", Object.keys(request));
     
     // If the request has a getData method (Caido table row objects often have this)
     if (request.getData && typeof request.getData === 'function') {
       try {
         const data = request.getData();
-        console.log("[JWT Analyzer] Got data via getData():", data);
         if (data) {
           // Check if the data object itself might have the token
           const token = extractJWTFromRequestObject(data);
           if (token) return token;
         }
       } catch (err) {
-        console.warn("[JWT Analyzer] Error calling getData():", err);
+        // Continue to next method
       }
     }
 
@@ -100,17 +92,15 @@ export function extractJWTFromRequest(request: any): string | null {
     if (request.getRawRequest && typeof request.getRawRequest === 'function') {
       try {
         const rawRequest = request.getRawRequest();
-        console.log("[JWT Analyzer] Got raw request:", rawRequest);
         if (rawRequest) {
           // Look for JWT tokens in raw request
           const tokens = findJWTs(rawRequest);
           if (tokens.length > 0) {
-            console.log("[JWT Analyzer] Found JWT token in raw request");
             return tokens[0] || null;
           }
         }
       } catch (err) {
-        console.warn("[JWT Analyzer] Error getting raw request:", err);
+        // Continue to next method
       }
     }
 
@@ -125,7 +115,7 @@ export function extractJWTFromRequest(request: any): string | null {
           body: request.getBody ? request.getBody() : null
         };
         
-        console.log("[JWT Analyzer] Built request object from row methods:", requestObj);
+        // Log:("[JWT Analyzer] Built request object from row methods:", requestObj);
         const token = extractJWTFromRequestObject(requestObj);
         if (token) return token;
       } catch (err) {
@@ -139,14 +129,14 @@ export function extractJWTFromRequest(request: any): string | null {
     // If this is a row from the HTTP history list, it might have a request property
     // that contains the actual request object
     if (request.request && typeof request.request === 'object') {
-      console.log("[JWT Analyzer] Found nested request object, checking it");
+      // Log:("[JWT Analyzer] Found nested request object, checking it");
       const token = extractJWTFromRequestObject(request.request);
       if (token) return token;
     }
     
     // For Caido HTTP history rows, check various common properties
     if (request.headers || request.body || request.url || request.raw) {
-      console.log("[JWT Analyzer] Request has standard properties, checking directly");
+      // Log:("[JWT Analyzer] Request has standard properties, checking directly");
       const token = extractJWTFromRequestObject(request);
       if (token) return token;
     }
@@ -154,9 +144,9 @@ export function extractJWTFromRequest(request: any): string | null {
     // For Caido HTTP history rows, the real request might be accessible via getRequest()
     if (request.getRequest && typeof request.getRequest === 'function') {
       try {
-        console.log("[JWT Analyzer] Attempting to call getRequest()");
+        // Log:("[JWT Analyzer] Attempting to call getRequest()");
         const fullRequest = request.getRequest();
-        console.log("[JWT Analyzer] getRequest() returned:", fullRequest);
+        // Log:("[JWT Analyzer] getRequest() returned:", fullRequest);
         if (fullRequest) {
           const token = extractJWTFromRequestObject(fullRequest);
           if (token) return token;
@@ -173,7 +163,7 @@ export function extractJWTFromRequest(request: any): string | null {
         const stringified = JSON.stringify(request);
         const tokens = findJWTs(stringified);
         if (tokens.length > 0) {
-          console.log("[JWT Analyzer] Found JWT token in stringified object");
+          // Log:("[JWT Analyzer] Found JWT token in stringified object");
           return tokens[0] || null;
         }
       } catch (err) {
@@ -252,7 +242,7 @@ function findJwtInAuthHeader(request: any): string | null {
     if (authHeader?.value?.startsWith('Bearer ')) {
       const token = authHeader.value.replace('Bearer ', '').trim();
       if (isJWT(token)) {
-        console.log("[JWT Analyzer] Found JWT in Authorization header");
+        // Log:("[JWT Analyzer] Found JWT in Authorization header");
         return token;
       }
     }
@@ -268,7 +258,7 @@ function findJwtInAuthHeader(request: any): string | null {
     if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
       const token = authHeader.replace('Bearer ', '').trim();
       if (isJWT(token)) {
-        console.log("[JWT Analyzer] Found JWT in Authorization header (object format)");
+        // Log:("[JWT Analyzer] Found JWT in Authorization header (object format)");
         return token;
       }
     }
@@ -305,7 +295,7 @@ function findJwtInOtherHeaders(request: any): string | null {
       );
       
       if (header?.value && isJWT(header.value)) {
-        console.log(`[JWT Analyzer] Found JWT in ${headerName} header`);
+        // Log:(`[JWT Analyzer] Found JWT in ${headerName} header`);
         return header.value;
       }
     }
@@ -319,7 +309,7 @@ function findJwtInOtherHeaders(request: any): string | null {
         headers[headerName.toUpperCase()];
         
       if (headerValue && typeof headerValue === 'string' && isJWT(headerValue)) {
-        console.log(`[JWT Analyzer] Found JWT in ${headerName} header (object format)`);
+        // Log:(`[JWT Analyzer] Found JWT in ${headerName} header (object format)`);
         return headerValue;
       }
     }
@@ -357,7 +347,7 @@ function findJwtInBody(request: any): string | null {
   // Search for JWT tokens in the body text
   const tokens = findJWTs(bodyText);
   if (tokens.length > 0) {
-    console.log("[JWT Analyzer] Found JWT in body");
+    // Log:("[JWT Analyzer] Found JWT in body");
     return tokens[0] || null;
   }
   
@@ -376,7 +366,7 @@ function findJwtInUrl(request: any): string | null {
   // Search for JWT tokens in URL
   const tokens = findJWTs(url);
   if (tokens.length > 0) {
-    console.log("[JWT Analyzer] Found JWT in URL");
+    // Log:("[JWT Analyzer] Found JWT in URL");
     return tokens[0] || null;
   }
   
@@ -395,7 +385,7 @@ function findJwtInRawRequest(request: any): string | null {
   // Search for JWT tokens in the raw request
   const tokens = findJWTs(raw);
   if (tokens.length > 0) {
-    console.log("[JWT Analyzer] Found JWT in raw request");
+    // Log:("[JWT Analyzer] Found JWT in raw request");
     return tokens[0] || null;
   }
   
@@ -450,7 +440,7 @@ function showNotification(message: string, type: 'success' | 'info' | 'warn' | '
     }
     // Fallback to console if nothing else works
     else {
-      console.log(`[JWT Analyzer] ${type.toUpperCase()}: ${message}`);
+      // Log:(`[JWT Analyzer] ${type.toUpperCase()}: ${message}`);
     }
   } catch (e) {
     console.error("[JWT Analyzer] Failed to show notification:", e);

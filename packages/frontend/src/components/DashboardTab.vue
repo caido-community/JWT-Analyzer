@@ -1,78 +1,87 @@
 <template>
-  <div class="dashboard-container h-full flex flex-col">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <Card class="bg-gray-50 dark:bg-surface-700">
+  <div class="h-full flex flex-col">
+    <!-- Fixed header section -->
+    <div class="flex-shrink-0 p-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <Card class="bg-gray-50 dark:bg-surface-700" :pt="{ body: { class: 'p-0' }, content: { class: 'flex flex-col' } }">
         <template #title>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between px-4 py-3">
             <span>JWT Summary</span>
             <Badge :value="jwtCount" severity="info" />
           </div>
         </template>
         <template #content>
-          <div class="stats-grid grid grid-cols-2 gap-4">
-            <div class="stat p-4 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-red-500">
-              <div class="text-gray-500 dark:text-gray-400 text-sm font-medium">Critical Issues</div>
-              <div class="font-bold text-2xl text-danger-600 dark:text-danger-400">{{ criticalCount }}</div>
+          <div class="px-4 pb-4">
+          <div class="stats-grid grid grid-cols-2 gap-2">
+            <div class="stat p-3 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-red-500">
+              <div class="text-gray-500 dark:text-gray-400 text-xs font-medium">Critical Issues</div>
+              <div class="font-bold text-lg text-danger-600 dark:text-danger-400">{{ criticalCount }}</div>
             </div>
-            <div class="stat p-4 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-orange-500">
-              <div class="text-gray-500 dark:text-gray-400 text-sm font-medium">High Issues</div>
-              <div class="font-bold text-2xl text-orange-500 dark:text-orange-400">{{ highCount }}</div>
+            <div class="stat p-3 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-orange-500">
+              <div class="text-gray-500 dark:text-gray-400 text-xs font-medium">High Issues</div>
+              <div class="font-bold text-lg text-orange-500 dark:text-orange-400">{{ highCount }}</div>
             </div>
-            <div class="stat p-4 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-yellow-500">
-              <div class="text-gray-500 dark:text-gray-400 text-sm font-medium">Medium Issues</div>
-              <div class="font-bold text-2xl text-yellow-500 dark:text-yellow-400">{{ mediumCount }}</div>
+            <div class="stat p-3 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-yellow-500">
+              <div class="text-gray-500 dark:text-gray-400 text-xs font-medium">Medium Issues</div>
+              <div class="font-bold text-lg text-yellow-500 dark:text-yellow-400">{{ mediumCount }}</div>
             </div>
-            <div class="stat p-4 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-blue-500">
-              <div class="text-gray-500 dark:text-gray-400 text-sm font-medium">Low Issues</div>
-              <div class="font-bold text-2xl text-info-600 dark:text-info-400">{{ lowCount }}</div>
+            <div class="stat p-3 rounded-lg bg-white dark:bg-surface-800 shadow-sm border-l-4 border-blue-500">
+              <div class="text-gray-500 dark:text-gray-400 text-xs font-medium">Low Issues</div>
+              <div class="font-bold text-lg text-info-600 dark:text-info-400">{{ lowCount }}</div>
             </div>
+          </div>
           </div>
         </template>
       </Card>
 
-      <Card class="bg-gray-50 dark:bg-surface-700">
+      <Card class="bg-gray-50 dark:bg-surface-700" :pt="{ body: { class: 'p-0' }, content: { class: 'flex flex-col' } }">
         <template #title>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between px-4 py-3">
             <span>Algorithm Distribution</span>
           </div>
         </template>
         <template #content>
-          <div v-if="jwtCount === 0" class="h-36 flex items-center justify-center text-gray-500">
+          <div class="px-4 pb-4">
+          <div v-if="jwtCount === 0" class="h-24 flex items-center justify-center text-gray-500">
             No JWTs analyzed yet
           </div>
           <div v-else class="algorithm-distribution">
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-2">
               <div v-for="(item, index) in algorithmData" :key="index" 
-                class="algorithm-card p-3 rounded-lg bg-white dark:bg-surface-800 shadow-sm"
-                :style="{ borderLeft: '4px solid ' + getAlgorithmColor(item.name) }">
+                class="algorithm-card p-2 rounded-lg bg-white dark:bg-surface-800 shadow-sm"
+                :style="{ borderLeft: '3px solid ' + getAlgorithmColor(item.name) }">
                 <div class="flex items-center justify-between mb-1">
-                  <div class="font-medium text-sm">{{ item.name }}</div>
-                  <div class="text-xs font-bold px-2 py-1 rounded-full" 
+                  <div class="font-medium text-xs">{{ item.name }}</div>
+                  <div class="text-xs font-bold px-1.5 py-0.5 rounded-full" 
                     :style="{ backgroundColor: getAlgorithmColor(item.name) + '33', color: getAlgorithmColor(item.name) }">
-                    {{ item.value }} token{{ item.value !== 1 ? 's' : '' }}
+                    {{ item.value }}
                   </div>
                 </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                  <div class="h-2 rounded-full" 
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <div class="h-1.5 rounded-full" 
                     :style="{ 
                       width: getPercentage(item) + '%', 
                       backgroundColor: getAlgorithmColor(item.name)
                     }">
                   </div>
                 </div>
-                <div class="text-xs text-right mt-1 text-gray-500">
+                <div class="text-xs text-right mt-0.5 text-gray-500">
                   {{ getPercentage(item) }}%
                 </div>
               </div>
             </div>
           </div>
+          </div>
         </template>
       </Card>
+      </div>
     </div>
 
-    <Card class="flex-grow bg-gray-50 dark:bg-surface-700">
+    <!-- Scrollable main content area -->
+    <div class="flex-1 min-h-0 overflow-hidden p-4 pt-0">
+      <Card class="h-full bg-gray-50 dark:bg-surface-700" :pt="{ body: { class: 'h-full p-0' }, content: { class: 'h-full flex flex-col' } }">
       <template #title>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between px-4 py-3">
         <div class="flex items-center">
           <span class="tab-icon">
             <i class="pi pi-list"></i>
@@ -80,20 +89,19 @@
           <span>Recent Findings</span>
           </div>
           <div class="flex items-center">
-            <span v-if="isAutoRefresh" class="text-xs mr-2 text-green-500">Auto-refresh: ON</span>
             <Button icon="pi pi-refresh" text rounded aria-label="Refresh" 
               :loading="isLoading" @click="refreshFindings" />
-            <Button :icon="isAutoRefresh ? 'pi pi-pause' : 'pi pi-play'" text rounded 
-              :class="isAutoRefresh ? 'text-green-500' : ''"
-              aria-label="Toggle Auto-refresh" @click="toggleAutoRefresh" />
           </div>
         </div>
       </template>
       <template #content>
+        <div class="h-full flex flex-col">
         <!-- Add the search and filter component -->
-        <SearchFilterBar @filter-change="applyFilters" />
+        <div class="px-4 pb-2">
+          <SearchFilterBar @filter-change="applyFilters" />
+        </div>
 
-        <div v-if="findings.length === 0" class="flex items-center justify-center h-full min-h-[200px] text-gray-500">
+        <div v-if="findings.length === 0" class="flex-1 flex items-center justify-center text-gray-500 px-4">
           <div class="text-center">
             <span class="block text-4xl mb-2">
               <i class="pi pi-inbox text-4xl"></i>
@@ -101,7 +109,7 @@
             <p>No JWT findings yet</p>
           </div>
         </div>
-        <div v-else-if="filteredFindings.length === 0" class="flex items-center justify-center h-full min-h-[200px] text-gray-500">
+        <div v-else-if="filteredFindings.length === 0" class="flex-1 flex items-center justify-center text-gray-500 px-4">
           <div class="text-center">
             <span class="block text-4xl mb-2">
               <i class="pi pi-filter-slash"></i>
@@ -109,7 +117,7 @@
             <p>No findings match your filters</p>
           </div>
         </div>
-        <div v-else>
+        <div v-else class="flex-1 overflow-hidden px-4 pb-4">
           <DataTable :value="filteredFindings" :paginator="filteredFindings.length > 10" :rows="10" 
             stripedRows class="p-datatable-sm" responsiveLayout="scroll"
             v-model:expandedRows="expandedRows"
@@ -125,7 +133,7 @@
             <Column field="title" header="Title" :sortable="true">
               <template #body="slotProps">
                 <div class="flex items-center">
-                  <span class="token-preview font-mono bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded border-l-2 border-blue-500">
+                  <span class="token-preview font-mono px-2 py-1 rounded border-l-2 border-blue-500">
                     {{ formatTokenPreview(slotProps.data.metadata?.token || '') }}
                   </span>
                   <button 
@@ -140,8 +148,8 @@
             </Column>
             <Column field="metadata.source" header="Source" :sortable="true">
               <template #body="slotProps">
-                <Tag :value="slotProps.data.metadata.source" 
-                  :severity="slotProps.data.metadata.source === 'request' ? 'info' : 'success'" />
+                <Tag :value="slotProps.data.metadata?.source || 'unknown'" 
+                  :severity="slotProps.data.metadata?.source === 'request' ? 'info' : 'success'" />
               </template>
             </Column>
             <Column field="severity" header="Severity" :sortable="true">
@@ -186,9 +194,9 @@
           <template #expansion="slotProps">
             <div class="p-3 request-expansion bg-white dark:bg-surface-800 rounded-lg shadow-sm"
                  :class="{
-                   'request-source': slotProps.data.metadata.source === 'request',
-                   'response-source': slotProps.data.metadata.source === 'response',
-                   'manual-source': slotProps.data.metadata.source === 'manual'
+                   'request-source': slotProps.data.metadata?.source === 'request',
+                   'response-source': slotProps.data.metadata?.source === 'response',
+                   'manual-source': slotProps.data.metadata?.source === 'manual'
                  }">
               
               <!-- JWT Token Information -->
@@ -197,7 +205,7 @@
                   <i class="pi pi-key text-blue-500 mr-2"></i>
                   JWT Token Information
                 </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div>
                     <div class="mb-2">
                       <span class="font-medium">Algorithm:</span> {{ slotProps.data.metadata.header?.alg || 'Unknown' }}
@@ -221,7 +229,7 @@
               </div>
               
               <!-- Token Source Information (for manual tokens only) -->
-              <div v-if="slotProps.data.metadata.source === 'manual'" class="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-sm">
+              <div v-if="slotProps.data.metadata?.source === 'manual'" class="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-sm">
                 <h4 class="font-bold mb-2 flex items-center">
                   <i class="pi pi-info-circle text-amber-500 mr-2"></i>
                   Token Source
@@ -265,8 +273,10 @@
           </template>
         </DataTable>
         </div>
+        </div>
       </template>
     </Card>
+    </div>
   </div>
 </template>
 
@@ -285,6 +295,7 @@ import Tag from 'primevue/tag';
 import SearchFilterBar from './SearchFilterBar.vue';
 import type { Finding } from '../types';
 import { useSDK } from '../plugins/sdk';
+import { createJWTStorageService } from '../services/storage';
 
 // Define a filter type for our search filters
 interface JWTFilter {
@@ -307,16 +318,14 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits<{
-  (e: 'viewDetails', finding: Finding): void,
+  (e: 'view-details', finding: Finding): void,
   (e: 'refresh'): void,
-  (e: 'filters-changed', filteredFindings: Finding[]): void
+  (e: 'filters-changed', filteredFindings: Finding[]): void,
+  (e: 'navigate-to', page: string): void
 }>();
 
 // State
 const isLoading = ref(false);
-const isAutoRefresh = ref(false);
-const refreshInterval = ref<number | null>(null);
-const isDebugMode = ref(true);
 const expandedRows = ref<Finding[]>([]);
 
 // Search and filter state
@@ -429,27 +438,17 @@ const algorithmData = computed(() => {
   const result = Object.entries(counts).map(([name, value]) => ({ name, value }));
   
   // Log the algorithm data to verify it's working
-  console.log("[JWT Analyzer] Algorithm distribution:", result);
+  // Log:("[JWT Analyzer] Algorithm distribution:", result);
   
   return result;
 });
 
-// Setup auto-refresh
 onMounted(() => {
-  // Load data immediately
   refreshFindings();
-  
-  // If auto-refresh is enabled, set up the interval
-  if (isAutoRefresh.value) {
-    startAutoRefresh();
-  }
-  
-  // Listen for findings-added event
   window.addEventListener('jwt-finding-added', handleFindingAdded);
 });
 
 onBeforeUnmount(() => {
-  stopAutoRefresh();
   window.removeEventListener('jwt-finding-added', handleFindingAdded);
 });
 
@@ -469,7 +468,7 @@ function handleFindingAdded(event: Event) {
 
 // Handle filter changes from search bar
 function applyFilters(filters: JWTFilter): void {
-  console.log("[JWT Analyzer] Applying filters:", filters);
+  // Log:("[JWT Analyzer] Applying filters:", filters);
   searchQuery.value = filters.search;
   selectedSeverities.value = filters.severities;
   selectedSources.value = filters.sources;
@@ -549,38 +548,31 @@ function onRowClick(event: any) {
 
 // Token Actions
 function viewTokenDetails(finding: Finding) {
-  console.log("[JWT Analyzer] DashboardTab sending viewDetails event to App with navigate=true");
-  emit('viewDetails', {...finding, navigate: true});
-  
-  // Navigate to token details tab (index 2)
-  window.dispatchEvent(new CustomEvent('navigate-tab', {
-    detail: { tabIndex: 2 }
-  }));
+  // Set navigate property to true to navigate to Token Details tab
+  emit('view-details', { ...finding, navigate: true });
 }
 
 function decodeToken(finding: Finding) {
   if (finding.metadata.token) {
-    // Navigate to decoder tab and pre-fill token
-    window.dispatchEvent(new CustomEvent('navigate-to-decoder', {
-      detail: { token: finding.metadata.token }
-    }));
+    emit('navigate-to', 'Decoder');
     
-    // The navigate-to-decoder event will handle the tab navigation
-    // (it's already set to index 1 in App.vue)
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('add-token-to-decoder', {
+        detail: { token: finding.metadata.token }
+      }));
+    }, 100);
   }
 }
 
 function sendToEditor(finding: Finding) {
   if (finding.metadata.token) {
-    // Dispatch event to notify JWT Editor
-    window.dispatchEvent(new CustomEvent('add-token-to-editor', {
-      detail: { token: finding.metadata.token }
-    }));
+    emit('navigate-to', 'JWT Editor');
     
-    // Navigate to JWT Editor tab (index 3, not 4)
-    window.dispatchEvent(new CustomEvent('navigate-tab', {
-      detail: { tabIndex: 3 }
-    }));
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('add-token-to-editor', {
+        detail: { token: finding.metadata.token }
+      }));
+    }, 100);
   }
 }
 
@@ -588,41 +580,9 @@ async function refreshFindings() {
   isLoading.value = true;
   emit('refresh');
   
-  // Short timeout to ensure loading indicator shows
   setTimeout(() => {
     isLoading.value = false;
   }, 500);
-}
-
-function toggleAutoRefresh() {
-  isAutoRefresh.value = !isAutoRefresh.value;
-  
-  if (isAutoRefresh.value) {
-    startAutoRefresh();
-    if (sdk && sdk.notifications) {
-      sdk.notifications.info('Auto-refresh enabled');
-    }
-  } else {
-    stopAutoRefresh();
-    if (sdk && sdk.notifications) {
-      sdk.notifications.info('Auto-refresh disabled');
-    }
-  }
-}
-
-function startAutoRefresh() {
-  // Refresh every 10 seconds
-  stopAutoRefresh(); // Clear any existing interval
-  refreshInterval.value = window.setInterval(() => {
-    refreshFindings();
-  }, 10000);
-}
-
-function stopAutoRefresh() {
-  if (refreshInterval.value !== null) {
-    clearInterval(refreshInterval.value);
-    refreshInterval.value = null;
-  }
 }
 
 function formatTokenPreview(token: string): string {
@@ -643,13 +603,9 @@ async function copyTokenToClipboard(token: string): Promise<void> {
   
   try {
     await navigator.clipboard.writeText(token);
-    // Ensure toast notification appears
-    if (sdk.notifications) {
-      sdk.notifications.success('JWT token copied to clipboard');
-    } else if (window.caidoSDK?.notifications) {
-      window.caidoSDK.notifications.success('JWT token copied to clipboard');
-    } else {
-      console.log('JWT token copied to clipboard');
+    // Use proper SDK notification
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('JWT token copied to clipboard', { variant: 'success' });
     }
   } catch (e) {
     console.error('Failed to copy token to clipboard:', e);
@@ -667,23 +623,17 @@ async function copyTokenToClipboard(token: string): Promise<void> {
     try {
       const success = document.execCommand('copy');
       if (success) {
-        if (sdk.notifications) {
-          sdk.notifications.success('JWT token copied to clipboard');
-        } else if (window.caidoSDK?.notifications) {
-          window.caidoSDK.notifications.success('JWT token copied to clipboard');
+        if (sdk?.window?.showToast) {
+          sdk.window.showToast('JWT token copied to clipboard', { variant: 'success' });
         }
       } else {
-        if (sdk.notifications) {
-          sdk.notifications.error('Failed to copy token');
-        } else if (window.caidoSDK?.notifications) {
-          window.caidoSDK.notifications.error('Failed to copy token');
+        if (sdk?.window?.showToast) {
+          sdk.window.showToast('Failed to copy token', { variant: 'error' });
         }
       }
     } catch (err) {
-      if (sdk.notifications) {
-        sdk.notifications.error('Failed to copy token');
-      } else if (window.caidoSDK?.notifications) {
-        window.caidoSDK.notifications.error('Failed to copy token');
+      if (sdk?.window?.showToast) {
+        sdk.window.showToast('Failed to copy token', { variant: 'error' });
       }
       console.error('Fallback copy failed:', err);
     }
@@ -700,12 +650,12 @@ function deleteToken(finding: Finding): void {
     // Remove from current list
     const newFindings = props.findings.filter((f: Finding) => f.id !== finding.id);
     
-    // Update local storage to persist the deletion
-    try {
-      localStorage.setItem('jwt_analyzer_findings', JSON.stringify(newFindings));
-    } catch (e) {
-      console.error('[JWT Analyzer] Error saving to localStorage:', e);
-    }
+    // Update SDK storage to persist the deletion
+    const storageService = createJWTStorageService(sdk);
+    storageService.saveFindings(newFindings);
+    
+    // Emit refresh event to notify parent to update
+    emit('refresh');
     
     // Dispatch event to update findings in other components
     const event = new CustomEvent('jwt-findings-refreshed', { 
@@ -713,18 +663,14 @@ function deleteToken(finding: Finding): void {
     });
     window.dispatchEvent(event);
     
-    // Show success message
-    if (sdk.notifications) {
-      sdk.notifications.success('Token deleted successfully');
-    } else if (window.caidoSDK?.notifications) {
-      window.caidoSDK.notifications.success('Token deleted successfully');
+    // Show success message using SDK
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Token deleted successfully', { variant: 'success' });
     }
   } catch (error) {
     console.error('[JWT Analyzer] Error deleting token:', error);
-    if (sdk.notifications) {
-      sdk.notifications.error('Failed to delete token');
-    } else if (window.caidoSDK?.notifications) {
-      window.caidoSDK.notifications.error('Failed to delete token');
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Failed to delete token', { variant: 'error' });
     }
   }
 }

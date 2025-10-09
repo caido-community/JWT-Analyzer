@@ -102,21 +102,12 @@ export function handleRequestInterceptor(sdk: CaidoBackendSDK, request: any): vo
     // Emit event for frontend
     sdk.api.send('request:captured', capturedRequest);
     
-    sdk.console.log(`Captured request: ${capturedRequest.method} ${capturedRequest.url}`);
-    
     // Process JWT tokens if found
     try {
       if (hasJwt && allTokens.length > 0) {
-        // Log that we're analyzing the request
-        sdk.console.log(`Analyzing request for JWT tokens`);
-        
-        sdk.console.log(`Found ${allTokens.length} JWT token(s) in request, analyzing...`);
-        
         // Process each token individually
         for (const token of allTokens) {
           try {
-            sdk.console.log(`Analyzing request token: ${token.substring(0, 15)}...`);
-            
             // Call the analyze API
             sdk.api.call("analyzeJWT", {
               token,
@@ -127,12 +118,6 @@ export function handleRequestInterceptor(sdk: CaidoBackendSDK, request: any): vo
             sdk.console.error(`Error calling analyzeJWT for request token: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
         }
-        
-        // Log success info
-        sdk.console.log(`Found JWT token(s) in request, ready to view in dashboard`);
-      } else {
-        // If no JWT tokens found, just log it, don't send anything to dashboard
-        sdk.console.log(`No JWT tokens found in the request`);
       }
     } catch (tokenProcessingError) {
       sdk.console.error(`Error processing JWT tokens: ${tokenProcessingError instanceof Error ? tokenProcessingError.message : 'Unknown error'}`);
@@ -226,7 +211,7 @@ export function handleResponseInterceptor(sdk: CaidoBackendSDK, request: any, re
     // Add the response to the request store
     try {
       requestStore.addResponse(requestId, responseObj);
-      sdk.console.log(`Added response for request ID: ${requestId}`);
+      // Response added for request ID
     } catch (e) {
       sdk.console.error(`Error adding response to store: ${e instanceof Error ? e.message : 'Unknown error'}`);
     }
@@ -235,14 +220,14 @@ export function handleResponseInterceptor(sdk: CaidoBackendSDK, request: any, re
     try {
       if (hasJwt && allTokens.length > 0) {
         // Log that we're analyzing the response
-        sdk.console.log(`Analyzing response for JWT tokens`);
+        // Backend log:(`Analyzing response for JWT tokens`);
         
-        sdk.console.log(`Found ${allTokens.length} JWT token(s) in response, analyzing...`);
+        // Backend log:(`Found ${allTokens.length} JWT token(s) in response, analyzing...`);
         
         // Process each token individually
         for (const token of allTokens) {
           try {
-            sdk.console.log(`Analyzing response token: ${token.substring(0, 15)}...`);
+            // Backend log:(`Analyzing response token: ${token.substring(0, 15)}...`);
             
             // Call the analyze API
             sdk.api.call("analyzeJWT", {
@@ -256,10 +241,10 @@ export function handleResponseInterceptor(sdk: CaidoBackendSDK, request: any, re
         }
         
         // Log success info
-        sdk.console.log(`Found JWT token(s) in response, ready to view in dashboard`);
+        // Backend log:(`Found JWT token(s) in response, ready to view in dashboard`);
       } else {
         // If no JWT tokens found, just log it, don't send anything to dashboard
-        sdk.console.log(`No JWT tokens found in the response`);
+        // Backend log:(`No JWT tokens found in the response`);
       }
     } catch (tokenProcessingError) {
       sdk.console.error(`Error processing JWT tokens: ${tokenProcessingError instanceof Error ? tokenProcessingError.message : 'Unknown error'}`);
@@ -278,7 +263,7 @@ export function handleResponseInterceptor(sdk: CaidoBackendSDK, request: any, re
  */
 export async function handleContextMenu(sdk: CaidoBackendSDK, context: any): Promise<void> {
   try {
-    sdk.console.log("JWT Analyzer context menu handler called");
+    // Backend log:("JWT Analyzer context menu handler called");
     
     // Extract the request from the context
     const request = context?.request;
@@ -329,10 +314,10 @@ export async function handleContextMenu(sdk: CaidoBackendSDK, context: any): Pro
     
     // Process tokens
     if (allTokens.length > 0) {
-      sdk.console.log(`Found ${allTokens.length} JWT token(s) in context menu selection`);
+      // Backend log:(`Found ${allTokens.length} JWT token(s) in context menu selection`);
       
       // Log analysis action
-      sdk.console.log(`Analyzing ${allTokens.length} JWT token(s)`);
+      // Backend log:(`Analyzing ${allTokens.length} JWT token(s)`);
       
       // Process each token
       for (const token of allTokens) {
@@ -348,12 +333,12 @@ export async function handleContextMenu(sdk: CaidoBackendSDK, context: any): Pro
       }
       
       // Log success
-      sdk.console.log(`JWT token(s) analyzed. Available in the JWT Analyzer dashboard.`);
+      // Backend log:(`JWT token(s) analyzed. Available in the JWT Analyzer dashboard.`);
     } else {
-      sdk.console.log("No JWT tokens found in context menu selection");
+      // Backend log:("No JWT tokens found in context menu selection");
       
       // Log warning
-      sdk.console.log("No JWT tokens found in the selected request");
+      // Backend log:("No JWT tokens found in the selected request");
     }
   } catch (error) {
     if (error instanceof Error) {

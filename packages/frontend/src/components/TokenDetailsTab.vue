@@ -1,116 +1,120 @@
 <template>
-  <div class="token-details-container h-full overflow-auto" @contextmenu.prevent="showContextMenu">
-    <div v-if="finding" class="jwt-details h-full flex flex-col">
-      <!-- Toolbar with actions -->
-      <div class="flex items-center justify-end mb-3">
-        <div class="flex items-center space-x-2">
-          <Button label="Refresh" @click="refreshTokenDetails" size="small" class="p-button-outlined">
-            <template #icon>
-              <i class="pi pi-refresh"></i>
-            </template>
-          </Button>
-          <Button label="Rename" @click="showRenameModal = true" size="small" class="p-button-outlined">
-            <template #icon>
-              <i class="pi pi-pencil"></i>
-            </template>
-          </Button>
-          <Button label="Copy Token" @click="copyTokenToClipboard" size="small" class="p-button-outlined">
-            <template #icon>
-              <i class="pi pi-copy"></i>
-            </template>
-          </Button>
-          <Button label="Send to JWT Editor" @click="sendToJWTEditor" size="small" class="p-button-outlined p-button-info">
-            <template #icon>
-              <i class="pi pi-external-link"></i>
-            </template>
-          </Button>
-          <Button label="Export" @click="exportMenu.toggle($event)" size="small" class="p-button-outlined p-button-success">
-            <template #icon>
-              <i class="pi pi-download"></i>
-            </template>
-          </Button>
-        </div>
+  <div class="h-full flex flex-col">
+    <!-- Token Tabs - Show if there are multiple tokens -->
+    <div v-if="tokenDetailsTabs && tokenDetailsTabs.length > 0" class="token-tabs-header">
+      <TabView v-model:activeIndex="currentTabIndex" class="token-tabs-inner" scrollable>
+        <TabPanel v-for="(tab, index) in tokenDetailsTabs" :key="index">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <span class="text-sm">{{ getTabTitle(tab) }}</span>
+              <Button 
+                icon="pi pi-times" 
+                text 
+                rounded 
+                severity="secondary" 
+                size="small" 
+                @click.stop="closeTab(index)"
+                class="w-5 h-5 p-0"
+              />
+            </div>
+          </template>
+        </TabPanel>
+      </TabView>
+    </div>
+
+    <!-- Token Details Content -->
+    <div class="flex-1 min-h-0 overflow-auto p-4" @contextmenu.prevent="showContextMenu">
+    <div v-if="currentFinding" class="jwt-details h-full flex flex-col">
+      <!-- Toolbar with actions - improved styling -->
+      <div class="flex items-center justify-end mb-3 gap-2">
+        <Button label="Refresh" @click="refreshTokenDetails" size="small" class="p-button-outlined" style="border-radius: 6px; padding: 0.375rem 0.75rem;">
+          <template #icon>
+            <i class="pi pi-refresh"></i>
+          </template>
+        </Button>
+        <Button label="Rename" @click="showRenameModal = true" size="small" class="p-button-outlined" style="border-radius: 6px; padding: 0.375rem 0.75rem;">
+          <template #icon>
+            <i class="pi pi-pencil"></i>
+          </template>
+        </Button>
+        <Button label="Copy Token" @click="copyTokenToClipboard" size="small" class="p-button-outlined" style="border-radius: 6px; padding: 0.375rem 0.75rem;">
+          <template #icon>
+            <i class="pi pi-copy"></i>
+          </template>
+        </Button>
+        <Button label="Send to JWT Editor" @click="sendToJWTEditor" size="small" class="p-button-outlined p-button-info" style="border-radius: 6px; padding: 0.375rem 0.75rem;">
+          <template #icon>
+            <i class="pi pi-external-link"></i>
+          </template>
+        </Button>
+        <Button label="Export" @click="exportMenu.toggle($event)" size="small" class="p-button-outlined p-button-success" style="border-radius: 6px; padding: 0.375rem 0.75rem;">
+          <template #icon>
+            <i class="pi pi-download"></i>
+          </template>
+        </Button>
       </div>
 
       <!-- Token Header -->
       <div class="mb-4">
-        <div class="flex justify-between items-center mb-2">
+        <div class="flex justify-between items-center mb-3">
           <h2 class="text-lg font-semibold">Token Summary</h2>
-          <div class="flex items-center">
-            <div class="mr-2">Severity:</div>
-            <span 
-              :class="[
-                getSeverityClass(finding.metadata.severity || 'info'),
-                'px-3 py-1 text-xs font-medium rounded-md inline-block min-w-[70px] text-center'
-              ]"
-            >
-              {{ (finding.metadata.severity || 'info').charAt(0).toUpperCase() + (finding.metadata.severity || 'info').slice(1) }}
-            </span>
-          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <Card class="bg-gray-50 dark:bg-surface-700">
-            <template #title>
-              <div class="flex items-center">
-                <span class="tab-icon">
-                  <i class="pi pi-shield"></i>
-                </span>
-                <span>Algorithm</span>
-              </div>
-            </template>
-            <template #content>
-              <div class="text-lg font-mono">{{ finding.metadata.header?.alg || 'None' }}</div>
-              <div v-if="isWeakAlgorithm(finding.metadata.header?.alg)" class="text-xs text-orange-500 mt-1">
-                <span class="inline-block align-middle mr-1">⚠️</span>
-                <span>{{ getAlgorithmWarning(finding.metadata.header?.alg) }}</span>
-              </div>
-            </template>
-          </Card>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div class="bg-gray-50 dark:bg-surface-700 rounded-md px-3 py-2 flex items-center justify-between" style="border: 1px solid rgba(209, 213, 219, 0.3);">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-shield text-sm" style="color: currentColor;"></i>
+              <span class="font-semibold text-xs">Algorithm</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-xs font-mono">{{ currentFinding.metadata.header?.alg || 'None' }}</span>
+              <span v-if="isWeakAlgorithm(currentFinding.metadata.header?.alg)" class="text-orange-500 text-xs">⚠️</span>
+            </div>
+          </div>
           
-          <Card class="bg-gray-50 dark:bg-surface-700">
-            <template #title>
-              <div class="flex items-center">
-                <span class="tab-icon">
-                  <i class="pi pi-user"></i>
-                </span>
-                <span>Issuer</span>
-              </div>
-            </template>
-            <template #content>
-              <div class="text-sm font-mono overflow-hidden text-ellipsis">
-                {{ finding.metadata.payload?.iss || finding.metadata.issuer || 'Not specified' }}
-              </div>
-              <div v-if="!finding.metadata.payload?.iss && !finding.metadata.issuer" class="text-xs text-orange-500 mt-1">
-                <span class="inline-block align-middle mr-1">⚠️</span>
-                <span>Missing issuer claim</span>
-              </div>
-            </template>
-          </Card>
+          <div class="bg-gray-50 dark:bg-surface-700 rounded-md px-3 py-2 flex items-center justify-between" style="border: 1px solid rgba(209, 213, 219, 0.3);">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-key text-sm" style="color: currentColor;"></i>
+              <span class="font-semibold text-xs">Signature Type</span>
+            </div>
+            <div class="text-xs font-semibold" :class="{
+              'text-blue-600 dark:text-blue-400': isAsymmetricAlgorithm(currentFinding.metadata.header?.alg),
+              'text-purple-600 dark:text-purple-400': isSymmetricAlgorithm(currentFinding.metadata.header?.alg),
+              'text-red-600 dark:text-red-400': currentFinding.metadata.header?.alg === 'none'
+            }">
+              {{ getSignatureTypeLabel(currentFinding.metadata.header?.alg) }}
+            </div>
+          </div>
           
-          <Card class="bg-gray-50 dark:bg-surface-700">
-            <template #title>
-              <div class="flex items-center">
-                <span class="tab-icon">
-                  <i class="pi pi-clock"></i>
-                </span>
-                <span>Expiration</span>
-              </div>
-            </template>
-            <template #content>
-              <div v-if="finding.metadata.payload?.exp" class="text-sm">
-                {{ formatExpirationTime(finding.metadata.payload.exp) }}
-              </div>
-              <div v-else-if="finding.metadata.expiresAt && finding.metadata.expiresAt !== 'Not specified'" class="text-sm">
-                {{ finding.metadata.expiresAt }}
-              </div>
-              <div v-else class="text-sm text-orange-500">No expiration set</div>
-              
-              <div class="text-xs mt-1" :class="getExpirationStatusClass(finding)">
-                {{ finding.metadata.timeLeft || 'No expiration time' }}
-              </div>
-            </template>
-          </Card>
+          <div class="bg-gray-50 dark:bg-surface-700 rounded-md px-3 py-2 flex items-center justify-between" style="border: 1px solid rgba(209, 213, 219, 0.3);">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-user text-sm" style="color: currentColor;"></i>
+              <span class="font-semibold text-xs">Issuer</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-xs font-mono">{{ currentFinding.metadata.payload?.iss || currentFinding.metadata.issuer || 'Not specified' }}</span>
+              <span v-if="!currentFinding.metadata.payload?.iss && !currentFinding.metadata.issuer" class="text-orange-500 text-xs">⚠️</span>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 dark:bg-surface-700 rounded-md px-3 py-2 flex items-center justify-between" style="border: 1px solid rgba(209, 213, 219, 0.3);">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-clock text-sm" style="color: currentColor;"></i>
+              <span class="font-semibold text-xs">Expiration</span>
+            </div>
+            <div class="flex flex-col items-end">
+              <span class="text-xs" v-if="currentFinding.metadata.payload?.exp">
+                {{ formatExpirationTime(currentFinding.metadata.payload.exp) }}
+              </span>
+              <span class="text-xs" v-else-if="currentFinding.metadata.expiresAt && currentFinding.metadata.expiresAt !== 'Not specified'">
+                {{ currentFinding.metadata.expiresAt }}
+              </span>
+              <span class="text-xs text-orange-500" v-else>No expiration set</span>
+              <span class="text-[10px]" :class="getExpirationStatusClass(currentFinding)">
+                {{ currentFinding.metadata.timeLeft || 'No expiration time' }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -159,13 +163,13 @@
                 <div class="font-semibold mb-1">Token Validity</div>
                 <div class="flex items-center justify-between">
                   <span>Expiration Status:</span>
-                  <span :class="getExpirationStatusClass(finding)">
-                    {{ finding.metadata.payload?.exp ? (finding.metadata.expStatus === 'valid' ? 'Valid' : 'Expired') : 'Not Set' }}
+                  <span :class="currentFinding && currentFinding.metadata ? getExpirationStatusClass(currentFinding) : 'text-gray-500'">
+                    {{ currentFinding?.metadata?.payload?.exp ? (currentFinding?.metadata?.expStatus === 'valid' ? 'Valid' : 'Expired') : 'Not Set' }}
                   </span>
                 </div>
                 <div class="flex items-center justify-between mt-1">
                   <span>Time Remaining:</span>
-                  <span>{{ finding.metadata.payload?.exp ? finding.metadata.timeLeft : 'No expiration time' }}</span>
+                  <span>{{ currentFinding?.metadata?.payload?.exp ? currentFinding?.metadata?.timeLeft : 'No expiration time' }}</span>
                 </div>
               </div>
 
@@ -195,8 +199,8 @@
               <!-- Critical Vulnerabilities -->
               <div class="border-b dark:border-gray-700 mb-3 pb-3">
                 <div class="font-semibold mb-1">Critical Vulnerabilities</div>
-                <div v-if="finding.metadata.risks && finding.metadata.risks.filter(r => r.severity === 'critical').length > 0">
-                  <div v-for="(risk, idx) in finding.metadata.risks.filter(r => r.severity === 'critical')" :key="idx"
+                <div v-if="currentFinding.metadata.risks && currentFinding.metadata.risks.filter(r => r.severity === 'critical').length > 0">
+                  <div v-for="(risk, idx) in currentFinding.metadata.risks.filter(r => r.severity === 'critical')" :key="idx"
                     class="mt-1 text-red-600 dark:text-red-400">
                     {{ risk.description }}
                   </div>
@@ -209,43 +213,43 @@
               <!-- Security Considerations -->
               <div>
                 <div class="font-semibold mb-1">Security Considerations</div>
-                <div v-if="finding.metadata.header?.alg === 'none'" class="text-red-600 dark:text-red-400 mt-1">
+                <div v-if="currentFinding.metadata.header?.alg === 'none'" class="text-red-600 dark:text-red-400 mt-1">
                   <div class="flex items-start">
                     <span class="font-bold mr-1">•</span>
                     <span>Using 'none' algorithm is extremely dangerous and bypasses signature verification</span>
                   </div>
                 </div>
-                <div v-if="['HS256', 'HS384', 'HS512'].includes(finding.metadata.header?.alg || '')" class="text-orange-600 dark:text-orange-400 mt-1">
+                <div v-if="['HS256', 'HS384', 'HS512'].includes(currentFinding.metadata.header?.alg || '')" class="text-orange-600 dark:text-orange-400 mt-1">
                   <div class="flex items-start">
                     <span class="font-bold mr-1">•</span>
                     <span>Symmetric algorithm requires careful key management</span>
                   </div>
                 </div>
-                <div v-if="finding.metadata.header?.jwk || finding.metadata.header?.jku" class="text-red-600 dark:text-red-400 mt-1">
+                <div v-if="currentFinding.metadata.header?.jwk || currentFinding.metadata.header?.jku" class="text-red-600 dark:text-red-400 mt-1">
                   <div class="flex items-start">
                     <span class="font-bold mr-1">•</span>
                     <span>JWK/JKU parameters present - possible signature bypass risk</span>
                   </div>
                 </div>
-                <div v-if="!finding.metadata.payload?.exp" class="text-orange-600 dark:text-orange-400 mt-1">
+                <div v-if="!currentFinding.metadata.payload?.exp" class="text-orange-600 dark:text-orange-400 mt-1">
                   <div class="flex items-start">
                     <span class="font-bold mr-1">•</span>
                     <span>No expiration time - token remains valid indefinitely</span>
                   </div>
                 </div>
-                <div v-else-if="isLongExpiration(finding.metadata.payload?.exp)" class="text-yellow-600 dark:text-yellow-400 mt-1">
+                <div v-else-if="isLongExpiration(currentFinding.metadata.payload?.exp)" class="text-yellow-600 dark:text-yellow-400 mt-1">
                   <div class="flex items-start">
                     <span class="font-bold mr-1">•</span>
                     <span>Long expiration time increases risk if compromised</span>
                   </div>
                 </div>
-                <div v-if="finding.metadata.header?.alg === 'RS256'" class="text-yellow-600 dark:text-yellow-400 mt-1">
+                <div v-if="currentFinding.metadata.header?.alg === 'RS256'" class="text-yellow-600 dark:text-yellow-400 mt-1">
                   <div class="flex items-start">
                     <span class="font-bold mr-1">•</span>
                     <span>Check for algorithm confusion vulnerabilities (RS256 to HS256)</span>
                   </div>
                 </div>
-                <div v-if="Object.keys(finding.metadata.payload || {}).some(k => 
+                <div v-if="Object.keys(currentFinding.metadata.payload || {}).some(k => 
                     k.toLowerCase().includes('admin') || 
                     k.toLowerCase().includes('role') || 
                     k.toLowerCase().includes('priv'))" class="text-orange-600 dark:text-orange-400 mt-1">
@@ -273,20 +277,20 @@
               <div class="border-b dark:border-gray-700 mb-3 pb-3">
                 <div class="font-semibold mb-1">Algorithm</div>
                 <div class="flex items-center justify-between">
-                  <span class="font-mono">{{ finding.metadata.header?.alg || 'None' }}</span>
+                  <span class="font-mono">{{ currentFinding.metadata.header?.alg || 'None' }}</span>
                   <span 
                     :class="[
-                      isWeakAlgorithm(finding.metadata.header?.alg) ? 
+                      isWeakAlgorithm(currentFinding.metadata.header?.alg) ? 
                         'bg-yellow-200 text-yellow-900 dark:bg-yellow-700 dark:text-yellow-100' : 
                         'bg-green-200 text-green-900 dark:bg-green-700 dark:text-green-100',
                       'px-3 py-1 text-xs font-medium rounded-md inline-block min-w-[70px] text-center'
                     ]"
                   >
-                    {{ isWeakAlgorithm(finding.metadata.header?.alg) ? 'Weak' : 'Strong' }}
+                    {{ isWeakAlgorithm(currentFinding.metadata.header?.alg) ? 'Weak' : 'Strong' }}
                   </span>
                 </div>
-                <div v-if="isWeakAlgorithm(finding.metadata.header?.alg)" class="mt-2 text-sm text-orange-600 dark:text-orange-400">
-                  {{ getAlgorithmWarning(finding.metadata.header?.alg) }}
+                <div v-if="isWeakAlgorithm(currentFinding.metadata.header?.alg)" class="mt-2 text-sm text-orange-600 dark:text-orange-400">
+                  {{ getAlgorithmWarning(currentFinding.metadata.header?.alg) }}
                 </div>
               </div>
 
@@ -295,12 +299,12 @@
                 <div class="font-semibold mb-1">Expiration</div>
                 <div class="flex items-center justify-between">
                   <span>Expires At:</span>
-                  <span v-if="finding.metadata.payload?.exp" class="font-mono">
-                    {{ formatExpirationTime(finding.metadata.payload.exp) }}
+                  <span v-if="currentFinding.metadata.payload?.exp" class="font-mono">
+                    {{ formatExpirationTime(currentFinding.metadata.payload.exp) }}
                   </span>
                   <span v-else class="text-orange-600 dark:text-orange-400">Not Set</span>
                 </div>
-                <div v-if="!finding.metadata.payload?.exp" class="mt-2 text-sm text-orange-600 dark:text-orange-400">
+                <div v-if="!currentFinding.metadata.payload?.exp" class="mt-2 text-sm text-orange-600 dark:text-orange-400">
                   Missing expiration increases the window of opportunity for attackers.
                 </div>
               </div>
@@ -310,14 +314,14 @@
                 <div class="font-semibold mb-1">Issuance</div>
                 <div class="flex items-center justify-between">
                   <span>Issued At:</span>
-                  <span v-if="finding.metadata.payload?.iat" class="font-mono">
-                    {{ formatIssuedAt(finding.metadata.payload.iat) }}
+                  <span v-if="currentFinding.metadata.payload?.iat" class="font-mono">
+                    {{ formatIssuedAt(currentFinding.metadata.payload.iat) }}
                   </span>
                   <span v-else class="text-orange-600 dark:text-orange-400">Not Set</span>
                 </div>
-                <div v-if="finding.metadata.payload?.iat" class="flex items-center justify-between mt-1">
+                <div v-if="currentFinding.metadata.payload?.iat" class="flex items-center justify-between mt-1">
                   <span>Token Age:</span>
-                  <span>{{ getTokenAge(finding.metadata.payload.iat) }}</span>
+                  <span>{{ getTokenAge(currentFinding.metadata.payload.iat) }}</span>
                 </div>
               </div>
             </template>
@@ -338,9 +342,9 @@
               </div>
             </template>
             <template #content>
-              <div v-if="finding.metadata.risks && finding.metadata.risks.length > 0" class="findings-panel">
+              <div v-if="currentFinding.metadata.risks && currentFinding.metadata.risks.length > 0" class="findings-panel">
                 <div class="space-y-3">
-                  <div v-for="(risk, index) in finding.metadata.risks" :key="index" 
+                  <div v-for="(risk, index) in currentFinding.metadata.risks" :key="index" 
                        class="border border-gray-200 dark:border-gray-700 rounded p-3">
                     <div class="flex items-center justify-between mb-1">
                       <div class="flex items-center">
@@ -378,23 +382,23 @@
             <template #content>
               <div class="space-y-2 mb-4">
                 <ul class="space-y-2 list-none">
-                  <li v-if="finding.metadata.header?.alg === 'none'" class="border-l-2 border-red-500 pl-2">
+                  <li v-if="currentFinding.metadata.header?.alg === 'none'" class="border-l-2 border-red-500 pl-2">
                     <strong class="text-gray-700 dark:text-gray-300 font-semibold">Algorithm Bypass:</strong> 
                     <span>Modify the algorithm to "none" and remove the signature to bypass validation completely. Many JWT libraries have special handling for the 'none' algorithm.</span>
                   </li>
-                  <li v-if="['HS256', 'HS384', 'HS512'].includes(finding.metadata.header?.alg || '')" class="border-l-2 border-orange-500 pl-2">
+                  <li v-if="['HS256', 'HS384', 'HS512'].includes(currentFinding.metadata.header?.alg || '')" class="border-l-2 border-orange-500 pl-2">
                     <strong class="text-gray-700 dark:text-gray-300 font-semibold">Key Brute-Force:</strong> 
                     <span>Symmetric keys may be susceptible to brute-force or dictionary attacks using tools like hashcat (mode 16500) with common JWT secret wordlists.</span>
                   </li>
-                  <li v-if="finding.metadata.header?.alg === 'RS256'" class="border-l-2 border-orange-500 pl-2">
+                  <li v-if="currentFinding.metadata.header?.alg === 'RS256'" class="border-l-2 border-orange-500 pl-2">
                     <strong class="text-gray-700 dark:text-gray-300 font-semibold">Algorithm Confusion (CVE-2016-5431):</strong> 
                     <span>Vulnerable libraries may accept algorithm changes from RS256 to HS256, allowing attackers to sign tokens using the public key as an HMAC secret.</span>
                   </li>
-                  <li v-if="finding.metadata.header?.kid" class="border-l-2 border-orange-500 pl-2">
+                  <li v-if="currentFinding.metadata.header?.kid" class="border-l-2 border-orange-500 pl-2">
                     <strong class="text-gray-700 dark:text-gray-300 font-semibold">Key ID Injection:</strong> 
                     <span>The 'kid' parameter could be vulnerable to path traversal (e.g., '../../../dev/null') or SQL injection attacks if improperly validated.</span>
                   </li>
-                  <li v-if="!finding.metadata.payload?.exp" class="border-l-2 border-orange-500 pl-2">
+                  <li v-if="!currentFinding.metadata.payload?.exp" class="border-l-2 border-orange-500 pl-2">
                     <strong class="text-gray-700 dark:text-gray-300 font-semibold">Immortal Token:</strong> 
                     <span>Tokens without expiration remain valid indefinitely after compromise, even after password changes or user account deletion.</span>
                   </li>
@@ -402,8 +406,8 @@
               </div>
                 
               <h4 class="text-md font-semibold mt-6 mb-2">Security Recommendations</h4>
-              <div v-if="finding.metadata.suggestions && finding.metadata.suggestions.length > 0" class="space-y-1 mb-4">
-                <div v-for="(suggestion, index) in finding.metadata.suggestions.slice(0, 5)" :key="index" class="flex items-start">
+              <div v-if="currentFinding.metadata.suggestions && currentFinding.metadata.suggestions.length > 0" class="space-y-1 mb-4">
+                <div v-for="(suggestion, index) in currentFinding.metadata.suggestions.slice(0, 5)" :key="index" class="flex items-start">
                   <span class="text-green-600 dark:text-green-400 mr-2">•</span>
                   <span>{{ suggestion }}</span>
                 </div>
@@ -414,15 +418,15 @@
 
               <h4 class="text-md font-semibold mt-6 mb-2">CVE Mitigations</h4>
               <div class="space-y-2">
-                <div v-if="finding.metadata.header?.alg === 'none'" class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-2 rounded-r text-sm">
+                <div v-if="currentFinding.metadata.header?.alg === 'none'" class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-2 rounded-r text-sm">
                   <strong class="block text-gray-700 dark:text-gray-300">CVE-2015-9235 (None Algorithm)</strong>
                   <span>Update your JWT library to reject tokens with 'none' algorithm.</span>
                 </div>
-                <div v-if="finding.metadata.header?.alg === 'RS256'" class="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 p-2 rounded-r text-sm">
+                <div v-if="currentFinding.metadata.header?.alg === 'RS256'" class="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 p-2 rounded-r text-sm">
                   <strong class="block text-gray-700 dark:text-gray-300">CVE-2016-5431 (Algorithm Confusion)</strong>
                   <span>Always verify tokens with the expected algorithm.</span>
                 </div>
-                <div v-if="typeof finding.metadata.payload?.exp === 'string'" class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-2 rounded-r text-sm">
+                <div v-if="typeof currentFinding.metadata.payload?.exp === 'string'" class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-2 rounded-r text-sm">
                   <strong class="block text-gray-700 dark:text-gray-300">CVE-2022-21449 (Type Confusion)</strong>
                   <span>Ensure all numeric claims use proper number types.</span>
                 </div>
@@ -444,12 +448,12 @@
                 <span>Header</span>
               </div>
               <Button icon="pi pi-copy" text rounded aria-label="Copy Header" 
-                @click="copyToClipboard(JSON.stringify(finding.metadata.header, null, 2))" />
+                @click="copyToClipboard(JSON.stringify(currentFinding.metadata.header, null, 2))" />
             </div>
           </template>
           <template #content>
             <div class="bg-gray-800 text-white p-3 rounded font-mono text-sm overflow-auto max-h-64">
-              <pre>{{ JSON.stringify(finding.metadata.header, null, 2) }}</pre>
+              <pre>{{ JSON.stringify(currentFinding.metadata.header, null, 2) }}</pre>
             </div>
           </template>
         </Card>
@@ -464,12 +468,12 @@
                 <span>Payload</span>
               </div>
               <Button icon="pi pi-copy" text rounded aria-label="Copy Payload" 
-                @click="copyToClipboard(JSON.stringify(finding.metadata.payload, null, 2))" />
+                @click="copyToClipboard(JSON.stringify(currentFinding.metadata.payload, null, 2))" />
             </div>
           </template>
           <template #content>
             <div class="bg-gray-800 text-white p-3 rounded font-mono text-sm overflow-auto max-h-64">
-              <pre>{{ JSON.stringify(finding.metadata.payload, null, 2) }}</pre>
+              <pre>{{ JSON.stringify(currentFinding.metadata.payload, null, 2) }}</pre>
             </div>
           </template>
         </Card>
@@ -486,14 +490,14 @@
               <span>Raw Token</span>
             </div>
             <Button icon="pi pi-copy" text rounded aria-label="Copy Token" 
-              @click="copyToClipboard(finding.metadata.token)" />
+              @click="copyToClipboard(currentFinding.metadata.token)" />
           </div>
         </template>
         <template #content>
           <div class="bg-gray-800 text-white p-3 rounded font-mono text-sm overflow-auto max-h-32 jwt-token-display">
-            <div class="token-part token-header">{{ finding.metadata.token.split('.')[0] }}</div>
-            <div class="token-part token-payload">{{ finding.metadata.token.split('.')[1] }}</div>
-            <div class="token-part token-signature">{{ finding.metadata.token.split('.')[2] }}</div>
+            <div class="token-part token-header">{{ currentFinding.metadata.token.split('.')[0] }}</div>
+            <div class="token-part token-payload">{{ currentFinding.metadata.token.split('.')[1] }}</div>
+            <div class="token-part token-signature">{{ currentFinding.metadata.token.split('.')[2] }}</div>
           </div>
         </template>
       </Card>
@@ -504,11 +508,11 @@
       <div class="text-center p-8 bg-gray-50 dark:bg-surface-700 rounded-lg shadow-sm max-w-lg mx-auto">
         <div class="flex justify-center items-center mb-6">
           <div class="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-            <i class="pi pi-key text-gray-400" style="font-size: 3.5rem;"></i>
+            <i class="pi pi-key text-gray-400 dark:text-gray-500" style="font-size: 3.5rem;"></i>
           </div>
         </div>
-        <h3 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Select a JWT Token</h3>
-        <p class="text-gray-500 dark:text-gray-400 mb-6 text-lg">Use the Dashboard to view intercepted tokens or try the JWT Decoder to analyze a token manually</p>
+        <h3 class="text-2xl font-semibold text-gray-300 dark:text-gray-300 mb-4">Select a JWT Token</h3>
+        <p class="text-gray-400 dark:text-gray-400 mb-6 text-lg">Use the Dashboard to view intercepted tokens or try the JWT Decoder to analyze a token manually</p>
         <div class="flex flex-col md:flex-row justify-center gap-4">
           <Button label="Go to Dashboard" class="p-button-outlined" @click="navigateToDashboard" icon="pi pi-chart-bar" />
           <Button label="Open JWT Decoder" class="p-button-outlined" @click="navigateToDecoder" icon="pi pi-eye" />
@@ -550,6 +554,7 @@
         </div>
       </template>
     </Dialog>
+    </div>
   </div>
 </template>
 
@@ -561,6 +566,8 @@ import { watch } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 import type { Finding } from '../types';
 import { useSDK } from '../plugins/sdk';
 import Dialog from 'primevue/dialog';
@@ -572,24 +579,69 @@ const sdk = useSDK();
 
 // Props
 const props = defineProps<{
-  finding: Finding | null
+  finding: Finding | null,
+  tokenDetailsTabs?: (Finding & { customName?: string })[],
+  activeTokenTab?: number
 }>();
 
+// Current tab index (synced with parent)
+const currentTabIndex = ref(props.activeTokenTab || 0);
+
+// Watch for changes to activeTokenTab prop
+watch(() => props.activeTokenTab, (newVal) => {
+  if (newVal !== undefined) {
+    currentTabIndex.value = newVal;
+  }
+});
+
+// Watch for changes to currentTabIndex and notify parent
+watch(currentTabIndex, (newVal) => {
+  if (newVal !== props.activeTokenTab) {
+    emit('navigate-tab', newVal);
+  }
+});
+
+// Computed property for the current finding
+const currentFinding = computed(() => {
+  if (props.tokenDetailsTabs && props.tokenDetailsTabs.length > 0) {
+    return props.tokenDetailsTabs[currentTabIndex.value] || props.finding;
+  }
+  
+  return props.finding;
+});
+
 // Watch for changes to the finding prop to auto-refresh token details
-watch(() => props.finding?.metadata?.token, (newToken: string | undefined, oldToken: string | undefined) => {
+watch(() => currentFinding.value?.metadata?.token, (newToken: string | undefined, oldToken: string | undefined) => {
   if (newToken && newToken !== oldToken) {
-    // Only refresh if this is a new token - don't show refresh notification when auto-refreshing
     refreshTokenDetails(false);
-    
-    // Show a token loaded notification
-    showTokenLoadedNotification();
   }
 }, { immediate: true });
 
 // Emit events to parent
 const emit = defineEmits<{
-  (e: 'rename', newName: string): void;
+  (e: 'rename', newName: string, index: number): void;
+  (e: 'navigate-tab', index: number): void;
+  (e: 'close-token-tab', index: number): void;
+  (e: 'navigate-to', page: string): void;
 }>();
+
+// Functions for tab management
+function getTabTitle(tab: Finding & { customName?: string }): string {
+  if (tab.customName) {
+    return tab.customName;
+  }
+  
+  const alg = tab.metadata?.header?.alg || 'unknown';
+  const issuer = tab.metadata?.payload?.iss || tab.metadata?.issuer || 'unknown';
+  const token = tab.metadata?.token || '';
+  const shortToken = token.length > 10 ? token.substring(0, 10) + '...' : token;
+  
+  return `${alg} • ${issuer.substring(0, 15)}${issuer.length > 15 ? '...' : ''}`;
+}
+
+function closeTab(index: number) {
+  emit('close-token-tab', index);
+}
 
 // Context menu and rename dialog state
 const menu = ref();
@@ -698,7 +750,10 @@ function copyToClipboard(text: string) {
 }
 
 function getExpirationStatusClass(finding: Finding): string {
-  if (!finding.metadata.expStatus) return 'text-gray-500';
+  if (!finding || !finding.metadata || !finding.metadata.expStatus) {
+    return 'text-gray-500';
+  }
+  
   return finding.metadata.expStatus === 'valid' ? 'text-success-500' : 'text-orange-500';
 }
 
@@ -756,8 +811,62 @@ function getAlgorithmWarning(alg: string | undefined): string {
   return '';
 }
 
+function isSymmetricAlgorithm(alg: string | undefined): boolean {
+  if (!alg) return false;
+  return ['HS256', 'HS384', 'HS512'].includes(alg);
+}
+
+function isAsymmetricAlgorithm(alg: string | undefined): boolean {
+  if (!alg) return false;
+  return ['RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'PS256', 'PS384', 'PS512'].includes(alg);
+}
+
+function getSignatureTypeLabel(alg: string | undefined): string {
+  if (!alg) return 'Unknown';
+  
+  if (alg === 'none') {
+    return 'None (Unsigned)';
+  }
+  
+  if (isSymmetricAlgorithm(alg)) {
+    return 'Symmetric (HMAC)';
+  }
+  
+  if (isAsymmetricAlgorithm(alg)) {
+    if (alg.startsWith('RS') || alg.startsWith('PS')) {
+      return 'Asymmetric (RSA)';
+    }
+    if (alg.startsWith('ES')) {
+      return 'Asymmetric (ECDSA)';
+    }
+  }
+  
+  return 'Unknown';
+}
+
+function getSignatureTypeDescription(alg: string | undefined): string {
+  if (!alg) return 'No algorithm specified';
+  
+  if (alg === 'none') {
+    return 'No signature - vulnerable to tampering';
+  }
+  
+  if (isSymmetricAlgorithm(alg)) {
+    return 'Single shared secret key for signing & verification';
+  }
+  
+  if (isAsymmetricAlgorithm(alg)) {
+    return 'Private key signs, public key verifies';
+  }
+  
+  return 'Unknown algorithm type';
+}
+
 function getOverallSeverity(finding: Finding): string {
-  if (!finding.metadata.risks || finding.metadata.risks.length === 0) return 'info';
+  if (!finding || !finding.metadata || !finding.metadata.risks || finding.metadata.risks.length === 0) {
+    return 'info';
+  }
+  
   return finding.metadata.risks[0].severity;
 }
 
@@ -793,29 +902,22 @@ function showContextMenu(event: MouseEvent) {
 
 // Open rename dialog
 function openRenameDialog() {
-  newTokenName.value = props.finding?.customName || ''; // Use current custom name if exists
+  newTokenName.value = currentFinding.value?.customName || '';
   showRenameModal.value = true;
 }
 
 // Save new tab name
 function renameToken() {
   if (newTokenName.value.trim()) {
-    emit('rename', newTokenName.value.trim());
+    emit('rename', newTokenName.value.trim(), currentTabIndex.value);
     showRenameModal.value = false;
-    
-    if ((window as any).caidoSDK?.window?.showToast) {
-      (window as any).caidoSDK.window.showToast('Token renamed successfully', {
-        variant: 'success',
-        duration: 3000
-      });
-    }
   }
 }
 
 // Function to copy token to clipboard
 function copyTokenToClipboard() {
-  if (props.finding?.metadata?.token) {
-    navigator.clipboard.writeText(props.finding.metadata.token)
+  if (currentFinding.value?.metadata?.token) {
+    navigator.clipboard.writeText(currentFinding.value.metadata.token)
       .then(() => {
         if ((window as any).caidoSDK?.window?.showToast) {
           (window as any).caidoSDK.window.showToast('Token copied to clipboard', {
@@ -837,56 +939,42 @@ function copyTokenToClipboard() {
 }
 
 function navigateToDashboard() {
-  // Navigate to dashboard (tab index 0)
-  if ((window as any).caidoSDK?.navigation) {
-    (window as any).caidoSDK.navigation.goTo("/dashboard");
-  } else {
-    // Fallback to changing parent tab index
-    const event = new CustomEvent('navigate-tab', { detail: { tabIndex: 0 } });
-    window.dispatchEvent(event);
-  }
+  // Emit navigation event for parent App.vue to handle
+  emit('navigate-to', 'Dashboard');
 }
 
 function navigateToDecoder() {
-  // Navigate to JWT Decoder (tab index 1)
-  if ((window as any).caidoSDK?.navigation) {
-    (window as any).caidoSDK.navigation.goTo("/jwt-decoder");
-  } else {
-    // Fallback to changing parent tab index
-    const event = new CustomEvent('navigate-tab', { detail: { tabIndex: 1 } });
-    window.dispatchEvent(event);
-  }
+  // Emit navigation event for parent App.vue to handle
+  emit('navigate-to', 'Decoder');
 }
 
 // Function to send token to JWT Editor
 function sendToJWTEditor() {
-  if (props.finding?.metadata?.token) {
-    // Create a custom event to add the token to the JWT Editor
-    const event = new CustomEvent('add-token-to-editor', { 
-      detail: { token: props.finding.metadata.token } 
-    });
-    window.dispatchEvent(event);
+  if (currentFinding.value?.metadata?.token) {
+    emit('navigate-to', 'JWT Editor');
     
-    // Switch to JWT Editor tab using the parent tab navigation
-    const tabEvent = new CustomEvent('navigate-to-editor', {});
-    window.dispatchEvent(tabEvent);
-    
-    // Show toast notification
-    if ((window as any).caidoSDK?.window?.showToast) {
-      (window as any).caidoSDK.window.showToast('Token sent to JWT Editor', {
-        variant: 'success',
-        duration: 3000
+    setTimeout(() => {
+      const event = new CustomEvent('add-token-to-editor', { 
+        detail: { token: currentFinding.value.metadata.token } 
       });
-    }
+      window.dispatchEvent(event);
+      
+      if ((window as any).caidoSDK?.window?.showToast) {
+        (window as any).caidoSDK.window.showToast('Token sent to JWT Editor', {
+          variant: 'success',
+          duration: 3000
+        });
+      }
+    }, 100);
   }
 }
 
 // Function to refresh token details
 function refreshTokenDetails(showNotification: boolean = true): void {
-  if (props.finding?.metadata?.token) {
+  if (currentFinding.value?.metadata?.token) {
     try {
       // Re-decode the token to get fresh information
-      const decoded = decodeJWT(props.finding.metadata.token);
+      const decoded = decodeJWT(currentFinding.value.metadata.token);
       
       if (decoded) {
         // Update expiration status and other time-based fields
@@ -897,8 +985,8 @@ function refreshTokenDetails(showNotification: boolean = true): void {
           const timeLeft = decoded.payload.exp - now;
           
           if (timeLeft > 0) {
-            if (props.finding.metadata) {
-              props.finding.metadata.expStatus = 'valid';
+            if (currentFinding.value.metadata) {
+              currentFinding.value.metadata.expStatus = 'valid';
               
               // Format the time left
               const days = Math.floor(timeLeft / 86400);
@@ -906,47 +994,47 @@ function refreshTokenDetails(showNotification: boolean = true): void {
               const minutes = Math.floor((timeLeft % 3600) / 60);
               
               if (days > 0) {
-                props.finding.metadata.timeLeft = `${days} day${days !== 1 ? 's' : ''}, ${hours} hour${hours !== 1 ? 's' : ''} remaining`;
+                currentFinding.value.metadata.timeLeft = `${days} day${days !== 1 ? 's' : ''}, ${hours} hour${hours !== 1 ? 's' : ''} remaining`;
               } else if (hours > 0) {
-                props.finding.metadata.timeLeft = `${hours} hour${hours !== 1 ? 's' : ''}, ${minutes} minute${minutes !== 1 ? 's' : ''} remaining`;
+                currentFinding.value.metadata.timeLeft = `${hours} hour${hours !== 1 ? 's' : ''}, ${minutes} minute${minutes !== 1 ? 's' : ''} remaining`;
               } else {
-                props.finding.metadata.timeLeft = `${minutes} minute${minutes !== 1 ? 's' : ''} remaining`;
+                currentFinding.value.metadata.timeLeft = `${minutes} minute${minutes !== 1 ? 's' : ''} remaining`;
               }
             }
-          } else if (props.finding.metadata) {
-            props.finding.metadata.expStatus = 'expired';
-            props.finding.metadata.timeLeft = 'Expired';
+          } else if (currentFinding.value.metadata) {
+            currentFinding.value.metadata.expStatus = 'expired';
+            currentFinding.value.metadata.timeLeft = 'Expired';
           }
         }
         
         // Store all the original severity values we need to preserve
-        const originalSeverity = props.finding.severity;
-        const originalMetadataSeverity = props.finding.metadata?.severity;
+        const originalSeverity = currentFinding.value.severity;
+        const originalMetadataSeverity = currentFinding.value.metadata?.severity;
         
         // Store the first risk's original severity if it exists (used for Security Analysis section)
         let originalFirstRiskSeverity = null;
-        if (props.finding.metadata?.risks && props.finding.metadata.risks.length > 0) {
-          originalFirstRiskSeverity = props.finding.metadata.risks[0].severity;
+        if (currentFinding.value.metadata?.risks && currentFinding.value.metadata.risks.length > 0) {
+          originalFirstRiskSeverity = currentFinding.value.metadata.risks[0].severity;
         }
         
         const analysis = analyzeJWTSecurity(decoded.header, decoded.payload);
-        if (analysis && analysis.risks && props.finding.metadata) {
+        if (analysis && analysis.risks && currentFinding.value.metadata) {
           // Keep the original first risk severity if it exists
           if (originalFirstRiskSeverity && analysis.risks.length > 0) {
             analysis.risks[0].severity = originalFirstRiskSeverity;
           }
           
           // Update the risks but preserve the severities
-          props.finding.metadata.risks = analysis.risks;
+          currentFinding.value.metadata.risks = analysis.risks;
           
           // Keep original severity values rather than using analysis.severity
           // This ensures refresh doesn't change the severity
           if (originalMetadataSeverity) {
-            props.finding.metadata.severity = originalMetadataSeverity;
+            currentFinding.value.metadata.severity = originalMetadataSeverity;
           }
           
           if (originalSeverity) {
-            props.finding.severity = originalSeverity;
+            currentFinding.value.severity = originalSeverity;
           }
         }
       }
@@ -996,23 +1084,15 @@ function getSeverityClass(severity: string): string {
 
 // Function to count risks by severity
 function countRisksBySeverity(finding: Finding, severity: string): number {
-  if (!finding?.metadata?.risks) return 0;
-  return finding.metadata.risks.filter((risk: any) => risk.severity === severity).length;
-}
-
-// Function to show notification when token is loaded
-function showTokenLoadedNotification() {
-  if ((window as any).caidoSDK?.window?.showToast) {
-    (window as any).caidoSDK.window.showToast('Token loaded and vulnerabilities analyzed', {
-      variant: 'success',
-      duration: 3000
-    });
+  if (!finding || !finding.metadata || !finding.metadata.risks) {
+    return 0;
   }
+  return finding.metadata.risks.filter((risk: any) => risk.severity === severity).length;
 }
 
 // Export functions
 function exportAsMarkdown() {
-  if (!props.finding) {
+  if (!currentFinding.value) {
     if ((window as any).caidoSDK?.window?.showToast) {
       (window as any).caidoSDK.window.showToast('No token details to export', {
         variant: 'error',
@@ -1024,9 +1104,9 @@ function exportAsMarkdown() {
 
   try {
     const fileName = `jwt-analysis-${new Date().getTime()}.md`;
-    const header = props.finding.metadata.header;
-    const payload = props.finding.metadata.payload;
-    const risks = props.finding.metadata.risks || [];
+    const header = currentFinding.value.metadata.header;
+    const payload = currentFinding.value.metadata.payload;
+    const risks = currentFinding.value.metadata.risks || [];
 
     let markdown = `# JWT Token Analysis\n\n`;
     markdown += `**Analysis Date:** ${new Date().toLocaleString()}\n\n`;
@@ -1038,12 +1118,12 @@ function exportAsMarkdown() {
     
     if (payload?.exp) {
       markdown += `- **Expiration:** ${formatExpirationTime(payload.exp)}\n`;
-      markdown += `- **Time Remaining:** ${props.finding.metadata.timeLeft || 'Unknown'}\n`;
+      markdown += `- **Time Remaining:** ${currentFinding.value.metadata.timeLeft || 'Unknown'}\n`;
     } else {
       markdown += `- **Expiration:** Not set\n`;
     }
     
-    markdown += `- **Overall Security Severity:** ${getOverallSeverity(props.finding)}\n\n`;
+    markdown += `- **Overall Security Severity:** ${getOverallSeverity(currentFinding.value)}\n\n`;
     
     // Security Risks
     markdown += `## Security Risks\n\n`;
@@ -1065,12 +1145,12 @@ function exportAsMarkdown() {
     markdown += `### Payload\n\n\`\`\`json\n${JSON.stringify(payload, null, 2)}\n\`\`\`\n\n`;
     
     // Raw Token
-    markdown += `### Raw Token\n\n\`\`\`\n${props.finding.metadata.token}\n\`\`\`\n`;
+    markdown += `### Raw Token\n\n\`\`\`\n${currentFinding.value.metadata.token}\n\`\`\`\n`;
     
     // Security Recommendations
-    if (props.finding.metadata.suggestions && props.finding.metadata.suggestions.length > 0) {
+    if (currentFinding.value.metadata.suggestions && currentFinding.value.metadata.suggestions.length > 0) {
       markdown += `\n## Security Recommendations\n\n`;
-      props.finding.metadata.suggestions.forEach(suggestion => {
+      currentFinding.value.metadata.suggestions.forEach(suggestion => {
         markdown += `- ${suggestion}\n`;
       });
     }
@@ -1103,7 +1183,7 @@ function exportAsMarkdown() {
 }
 
 function exportAsJSON() {
-  if (!props.finding) {
+  if (!currentFinding.value) {
     if ((window as any).caidoSDK?.window?.showToast) {
       (window as any).caidoSDK.window.showToast('No token details to export', {
         variant: 'error',
@@ -1119,20 +1199,20 @@ function exportAsJSON() {
     // Create export data structure
     const exportData = {
       analysisDate: new Date().toISOString(),
-      token: props.finding.metadata.token,
+      token: currentFinding.value.metadata.token,
       tokenSummary: {
-        algorithm: props.finding.metadata.header?.alg || 'None',
-        issuer: props.finding.metadata.payload?.iss || 'Not specified',
-        expiration: props.finding.metadata.payload?.exp 
-          ? formatExpirationTime(props.finding.metadata.payload.exp) 
+        algorithm: currentFinding.value.metadata.header?.alg || 'None',
+        issuer: currentFinding.value.metadata.payload?.iss || 'Not specified',
+        expiration: currentFinding.value.metadata.payload?.exp 
+          ? formatExpirationTime(currentFinding.value.metadata.payload.exp) 
           : 'Not set',
-        timeRemaining: props.finding.metadata.timeLeft || 'Unknown',
-        overallSeverity: getOverallSeverity(props.finding)
+        timeRemaining: currentFinding.value.metadata.timeLeft || 'Unknown',
+        overallSeverity: getOverallSeverity(currentFinding.value)
       },
-      header: props.finding.metadata.header,
-      payload: props.finding.metadata.payload,
-      securityRisks: props.finding.metadata.risks || [],
-      securityRecommendations: props.finding.metadata.suggestions || []
+      header: currentFinding.value.metadata.header,
+      payload: currentFinding.value.metadata.payload,
+      securityRisks: currentFinding.value.metadata.risks || [],
+      securityRecommendations: currentFinding.value.metadata.suggestions || []
     };
     
     // Download the JSON file
@@ -1305,5 +1385,44 @@ function exportAsJSON() {
 
 :deep(.dark) .jwt-dialog .p-dialog-footer {
   border-top-color: var(--surface-700);
+}
+
+/* Token tabs styling */
+.token-tabs-header {
+  padding: 0;
+  margin: 0;
+}
+
+:deep(.token-tabs-inner .p-tabview-nav-container) {
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0 1rem;
+}
+
+:deep(.token-tabs-inner .p-tabview-nav) {
+  border-bottom: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+:deep(.token-tabs-inner .p-tabview-nav-link) {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px 6px 0 0;
+  margin-right: 0.125rem;
+  font-size: 0.875rem;
+  border: 1px solid rgba(209, 213, 219, 0.3);
+  border-bottom: none;
+}
+
+:deep(.token-tabs-inner .p-tabview-selected .p-tabview-nav-link) {
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+:deep(.token-tabs-inner .p-tabview-panels) {
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 </style> 

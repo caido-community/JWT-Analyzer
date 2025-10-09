@@ -1,6 +1,7 @@
 <template>
-  <div class="jwt-editor-container h-full overflow-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 h-full">
+  <div class="h-full flex flex-col">
+    <div class="flex-1 min-h-0 overflow-auto p-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 h-full">
       <!-- JWT Editor with attack options -->
       <Card class="bg-gray-50 dark:bg-surface-700 w-full h-full">
         <template #title>
@@ -17,7 +18,7 @@
         <template #content>
           <div class="token-editor-content h-full flex flex-col overflow-auto">
             <!-- Token Tabs navigation -->
-            <div class="token-tabs bg-gray-100 dark:bg-surface-700 p-2 rounded mb-4 overflow-x-auto">
+            <div class="token-tabs bg-gray-100 dark:bg-surface-700 rounded mb-4 overflow-x-auto">
               <TabView v-model:activeIndex="activeTokenTab" class="token-tabs-inner w-full">
                 <TabPanel v-for="(tab, index) in tokenTabs" :key="tab.id">
                   <template #header>
@@ -43,11 +44,17 @@
                         placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
                     </div>
 
-                    <div class="flex space-x-2 mb-4">
-                      <Button icon="pi pi-search" label="Decode" @click="() => decodeToken(tab)" />
-                                              <Button label="Validate" icon="pi pi-check" @click="() => validateToken(tab)" severity="success" />
-                                              <Button label="Sign" icon="pi pi-lock" @click="() => prepareSignTab(tab)" severity="info" />
-                                              <Button label="Attack" icon="pi pi-exclamation-triangle" @click="() => prepareAttackTab(tab)" severity="warning" />
+                    <div class="flex items-center justify-between gap-2 mb-4 flex-wrap">
+                      <div class="flex items-center gap-2">
+                        <Button icon="pi pi-search" label="Decode" @click="() => decodeToken(tab)" />
+                        <Button label="Sign" icon="pi pi-lock" @click="() => prepareSignTab(tab)" severity="info" />
+                        <Button label="Attack" icon="pi pi-exclamation-triangle" @click="() => prepareAttackTab(tab)" severity="warning" />
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <Dropdown v-model="validationKeyIndex" :options="keyOptions" optionLabel="label" optionValue="index" 
+                          placeholder="Select key" class="w-64" />
+                        <Button label="Validate" icon="pi pi-check" @click="() => validateToken(tab)" severity="success" />
+                      </div>
                     </div>
 
                     <div v-if="tab.decodedToken" class="decoded-token flex-grow overflow-auto">
@@ -93,7 +100,17 @@
                       <!-- Signature block styled to match header/payload -->
                       <div class="mb-4">
                         <div class="flex justify-between items-center mb-2">
-                          <h3 class="text-md font-medium">Signature</h3>
+                          <div class="flex items-center gap-2">
+                            <h3 class="text-md font-medium">Signature</h3>
+                            <div v-if="tab.decodedToken?.header" class="text-xs font-semibold flex items-center gap-1" :class="{
+                              'text-blue-600 dark:text-blue-400': isAsymmetricAlgorithm(tab.decodedToken.header.alg),
+                              'text-purple-600 dark:text-purple-400': isSymmetricAlgorithm(tab.decodedToken.header.alg),
+                              'text-red-600 dark:text-red-400': tab.decodedToken.header.alg === 'none'
+                            }">
+                              <i class="pi pi-key"></i>
+                              <span>{{ getSignatureTypeLabel(tab.decodedToken.header.alg) }}</span>
+                            </div>
+                          </div>
                           <Button 
                             icon="pi pi-copy" 
                             text
@@ -167,7 +184,7 @@
                   class="p-5 mb-4 bg-gray-200 dark:bg-surface-700 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm flex justify-between items-center">
                   <div>
                     <div class="font-medium text-gray-800 dark:text-gray-200">{{ key.id || 'Unnamed Key' }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ key.type }} • {{ key.algorithm }}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatKeyTypeDisplay(key.type) }} • {{ key.algorithm }}</div>
                   </div>
                   <div class="flex space-x-2">
                     <Button icon="pi pi-pencil" text rounded aria-label="Edit" @click="editKey(index)" />
@@ -219,7 +236,7 @@
           <Dropdown id="key-algorithm" v-model="newKey.algorithm" 
             :options="newKey.type === 'symmetric' ? 
               ['HS256', 'HS384', 'HS512'] : 
-              ['RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512']" 
+              ['RS256', 'RS384', 'RS512', 'PS256', 'PS384', 'PS512', 'ES256', 'ES384', 'ES512']" 
             placeholder="Select algorithm" class="w-full" />
         </div>
 
@@ -313,7 +330,7 @@
           <label class="block font-medium mb-2">or enter a temporary key:</label>
           <div class="p-inputgroup">
             <InputText v-model="tempKeyValue" placeholder="Enter a signing key" class="flex-1" />
-            <Dropdown v-model="tempKeyAlgorithm" :options="['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512']" class="w-36" />
+            <Dropdown v-model="tempKeyAlgorithm" :options="['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'PS256', 'PS384', 'PS512', 'ES256', 'ES384', 'ES512']" class="w-36" />
           </div>
         </div>
       </div>
@@ -441,6 +458,7 @@
         </div>
       </template>
     </Dialog>
+    </div>
   </div>
 </template>
 
@@ -463,13 +481,15 @@ import Checkbox from 'primevue/checkbox';
 import { useSDK } from '../plugins/sdk';
 import { decodeJWT, analyzeJWTSecurity } from '../utils/jwt';
 import type { JWTHeader, JWTPayload } from '../types';
+import { createJWTStorageService } from '../services/storage';
 
 // Create emit for sending tokens to details
 const emit = defineEmits<{
-  (e: 'view-details', token: string, header: JWTHeader, payload: JWTPayload, analysis: any, navigate?: boolean): void;
+  (e: 'view-details-editor', token: string, header: JWTHeader, payload: JWTPayload, analysis: any, navigate?: boolean): void;
 }>();
 
 const sdk = useSDK();
+const storageService = createJWTStorageService(sdk);
 const token = ref('');
 const headerJson = ref('');
 const payloadJson = ref('');
@@ -499,6 +519,9 @@ const showSigningModal = ref(false);
 const selectedKeyIndex = ref(-1);
 const tempKeyValue = ref('');
 const tempKeyAlgorithm = ref('HS256');
+
+// Validation key selection
+const validationKeyIndex = ref(-1);
 
 // Attack dialog
 const showAttackModal = ref(false);
@@ -547,25 +570,29 @@ const attackTypes = computed(() => [
 // Load saved keys from localStorage on component mount
 onMounted(() => {
   try {
-    const savedKeys = localStorage.getItem('jwtAnalyzer_keys');
-    if (savedKeys) {
-      keys.value = JSON.parse(savedKeys);
+    const savedKeys = storageService.getJWTKeys();
+    if (savedKeys && savedKeys.length > 0) {
+      keys.value = savedKeys;
     }
     
     // Load saved custom weak secrets
-    const savedWeakSecrets = localStorage.getItem('jwtAnalyzer_weakSecrets');
-    if (savedWeakSecrets) {
-      try {
-        const parsedSecrets = JSON.parse(savedWeakSecrets);
-        // Merge saved secrets with default ones, avoiding duplicates
-        parsedSecrets.forEach((secret: string) => {
-          if (!weakSecrets.value.includes(secret)) {
-            weakSecrets.value.push(secret);
-          }
-        });
-      } catch (e) {
-        console.error('Error parsing saved weak secrets:', e);
-      }
+    const savedWeakSecrets = storageService.getWeakSecrets();
+    if (savedWeakSecrets && savedWeakSecrets.length > 0) {
+      // Merge saved secrets with default ones, avoiding duplicates
+      savedWeakSecrets.forEach((secret: string) => {
+        if (!weakSecrets.value.includes(secret)) {
+          weakSecrets.value.push(secret);
+        }
+      });
+    }
+    
+    // Load saved token editor state
+    const editorState = storageService.getEditorState();
+    if (editorState) {
+      token.value = editorState.token || '';
+      headerJson.value = editorState.headerJson || '';
+      payloadJson.value = editorState.payloadJson || '';
+      decodedToken.value = editorState.decodedToken || null;
     }
     
     // Create initial tab
@@ -607,12 +634,26 @@ onBeforeUnmount(() => {
   }) as EventListener);
 });
 
-// Save keys to localStorage whenever they change
-watch(keys, (newKeys: any[]) => {
+// Save keys to SDK storage whenever they change
+watch(keys, async (newKeys: any[]) => {
   try {
-    localStorage.setItem('jwtAnalyzer_keys', JSON.stringify(newKeys));
+    await storageService.saveJWTKeys(newKeys);
   } catch (error) {
     console.error('Error saving keys:', error);
+  }
+}, { deep: true });
+
+// Save token editor state to SDK storage whenever it changes
+watch([token, headerJson, payloadJson, decodedToken], async () => {
+  try {
+    await storageService.saveEditorState({
+      token: token.value,
+      headerJson: headerJson.value,
+      payloadJson: payloadJson.value,
+      decodedToken: decodedToken.value
+    });
+  } catch (error) {
+    console.error('Error saving editor state:', error);
   }
 }, { deep: true });
 
@@ -760,7 +801,200 @@ function validateJson(tabInput: TokenTab | null, type: 'header' | 'payload') {
   }
 }
 
-function validateToken(tabInput: TokenTab) {
+/**
+ * CRYPTOGRAPHIC SIGNATURE VERIFICATION
+ * This function actually verifies the JWT signature using the Web Crypto API
+ */
+async function verifyCryptographicSignature(tab: TokenTab, header: any, payload: any): Promise<{isValid: boolean, error?: string}> {
+  try {
+    const parts = tab.token.split('.');
+    if (parts.length !== 3) {
+      return { isValid: false, error: 'Invalid token format' };
+    }
+    
+    const [headerPart, payloadPart, signaturePart] = parts;
+    const dataToVerify = `${headerPart}.${payloadPart}`;
+    const algorithm = header.alg;
+    
+    if (!algorithm || algorithm === 'none') {
+      return { isValid: true };
+    }
+    
+    // Use the selected validation key
+    let verificationKey = null;
+    
+    if (validationKeyIndex.value >= 0 && validationKeyIndex.value < keys.value.length) {
+      verificationKey = keys.value[validationKeyIndex.value];
+      
+      // Check if selected key matches the algorithm
+      if (verificationKey.algorithm !== algorithm) {
+        return { isValid: false, error: `Selected key algorithm (${verificationKey.algorithm}) doesn't match token algorithm (${algorithm}). Please select a key with the correct algorithm.` };
+      }
+    } else {
+      return { isValid: false, error: `Please select a key for validation from the dropdown above the Validate button.` };
+    }
+    
+    // Verify the signature based on algorithm type
+    if (algorithm.startsWith('HS')) {
+      return await verifyHMACSignature(dataToVerify, signaturePart, verificationKey.value, algorithm);
+    } else if (algorithm.startsWith('RS') || algorithm.startsWith('PS')) {
+      return await verifyRSASignature(dataToVerify, signaturePart, verificationKey.publicKey || verificationKey.value, algorithm);
+    } else if (algorithm.startsWith('ES')) {
+      return await verifyECDSASignature(dataToVerify, signaturePart, verificationKey.publicKey || verificationKey.value, algorithm);
+    }
+    
+    return { isValid: false, error: `Unsupported algorithm: ${algorithm}` };
+  } catch (error) {
+    console.error('Cryptographic verification error:', error);
+    return { isValid: false, error: `Verification error: ${error instanceof Error ? error.message : 'Unknown error'}` };
+  }
+}
+
+async function verifyHMACSignature(data: string, signature: string, secret: string, algorithm: string): Promise<{isValid: boolean, error?: string}> {
+  try {
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(secret);
+    
+    const hashAlg = algorithm === 'HS256' ? 'SHA-256' : 
+                    algorithm === 'HS384' ? 'SHA-384' : 'SHA-512';
+    
+    const cryptoKey = await window.crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'HMAC', hash: { name: hashAlg } },
+      false,
+      ['verify']
+    );
+    
+    const dataBuffer = encoder.encode(data);
+    const signatureBuffer = base64UrlToArrayBuffer(signature);
+    
+    const isValid = await window.crypto.subtle.verify(
+      'HMAC',
+      cryptoKey,
+      signatureBuffer,
+      dataBuffer
+    );
+    
+    return { isValid };
+  } catch (error) {
+    return { isValid: false, error: `HMAC verification failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
+  }
+}
+
+async function verifyRSASignature(data: string, signature: string, publicKeyPEM: string, algorithm: string): Promise<{isValid: boolean, error?: string}> {
+  try {
+    const hashAlg = algorithm === 'RS256' || algorithm === 'PS256' ? 'SHA-256' :
+                    algorithm === 'RS384' || algorithm === 'PS384' ? 'SHA-384' : 'SHA-512';
+    
+    const publicKey = await importRsaPublicKey(publicKeyPEM, algorithm);
+    
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+    const signatureBuffer = base64UrlToArrayBuffer(signature);
+    
+    const algorithmName = algorithm.startsWith('PS') ? 'RSA-PSS' : 'RSASSA-PKCS1-v1_5';
+    const verifyAlg: any = {
+      name: algorithmName,
+      hash: { name: hashAlg }
+    };
+    
+    if (algorithmName === 'RSA-PSS') {
+      verifyAlg.saltLength = hashAlg === 'SHA-256' ? 32 : hashAlg === 'SHA-384' ? 48 : 64;
+    }
+    
+    const isValid = await window.crypto.subtle.verify(
+      verifyAlg,
+      publicKey,
+      signatureBuffer,
+      dataBuffer
+    );
+    
+    return { isValid };
+  } catch (error) {
+    return { isValid: false, error: `RSA verification failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
+  }
+}
+
+async function verifyECDSASignature(data: string, signature: string, publicKeyPEM: string, algorithm: string): Promise<{isValid: boolean, error?: string}> {
+  try {
+    const hashAlg = algorithm === 'ES256' ? 'SHA-256' :
+                    algorithm === 'ES384' ? 'SHA-384' : 'SHA-512';
+    
+    const publicKey = await importEcPublicKey(publicKeyPEM, algorithm);
+    
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+    const signatureBuffer = base64UrlToArrayBuffer(signature);
+    
+    const isValid = await window.crypto.subtle.verify(
+      { name: 'ECDSA', hash: { name: hashAlg } },
+      publicKey,
+      signatureBuffer,
+      dataBuffer
+    );
+    
+    return { isValid };
+  } catch (error) {
+    return { isValid: false, error: `ECDSA verification failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
+  }
+}
+
+async function importRsaPublicKey(pemKey: string, algorithm: string) {
+  const pemContents = pemKey
+    .replace('-----BEGIN PUBLIC KEY-----', '')
+    .replace('-----END PUBLIC KEY-----', '')
+    .replace(/\s/g, '');
+  
+  const binaryDer = base64ToArrayBuffer(pemContents);
+  
+  const hashAlg = algorithm === 'RS256' || algorithm === 'PS256' ? 'SHA-256' :
+                  algorithm === 'RS384' || algorithm === 'PS384' ? 'SHA-384' : 'SHA-512';
+  
+  const algorithmName = algorithm.startsWith('PS') ? 'RSA-PSS' : 'RSASSA-PKCS1-v1_5';
+  
+  return window.crypto.subtle.importKey(
+    'spki',
+    binaryDer,
+    { name: algorithmName, hash: { name: hashAlg } },
+    false,
+    ['verify']
+  );
+}
+
+async function importEcPublicKey(pemKey: string, algorithm: string) {
+  const pemContents = pemKey
+    .replace('-----BEGIN PUBLIC KEY-----', '')
+    .replace('-----END PUBLIC KEY-----', '')
+    .replace(/\s/g, '');
+  
+  const binaryDer = base64ToArrayBuffer(pemContents);
+  
+  const namedCurve = algorithm === 'ES256' ? 'P-256' :
+                     algorithm === 'ES384' ? 'P-384' : 'P-521';
+  
+  return window.crypto.subtle.importKey(
+    'spki',
+    binaryDer,
+    { name: 'ECDSA', namedCurve },
+    false,
+    ['verify']
+  );
+}
+
+function base64UrlToArrayBuffer(base64Url: string): ArrayBuffer {
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const padding = '='.repeat((4 - base64.length % 4) % 4);
+  const base64Padded = base64 + padding;
+  const binaryString = atob(base64Padded);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+async function validateToken(tabInput: TokenTab) {
   const tab = tabInput || (tokenTabs.value.length > 0 && activeTokenTab.value >= 0 ?
     tokenTabs.value[activeTokenTab.value] : null);
   
@@ -826,14 +1060,37 @@ function validateToken(tabInput: TokenTab) {
       return;
     }
     
-    // CRITICAL FIX: Validate that the signature matches the current header+payload
-    const isSignatureValid = validateTokenSignature(tab, header, payload);
+    // CRITICAL: Check if token parts were modified
+    const isStructurallyValid = validateTokenSignature(tab, header, payload);
     
-    if (!isSignatureValid) {
+    if (!isStructurallyValid) {
       if ((window as any).caidoSDK?.window?.showToast) {
-        (window as any).caidoSDK.window.showToast('INVALID SIGNATURE: Token signature does not match the current header and payload', {
+        (window as any).caidoSDK.window.showToast('TOKEN MODIFIED: Token signature does not match the current header and payload. Re-sign the token to make it valid.', {
           variant: 'error',
           duration: 5000
+        });
+      }
+      return;
+    }
+    
+    // NOW DO CRYPTOGRAPHIC VALIDATION: Verify signature with keys
+    const cryptoValidation = await verifyCryptographicSignature(tab, header, payload);
+    
+    if (cryptoValidation.error) {
+      if ((window as any).caidoSDK?.window?.showToast) {
+        (window as any).caidoSDK.window.showToast(`CRYPTOGRAPHIC VALIDATION FAILED: ${cryptoValidation.error}`, {
+          variant: 'error',
+          duration: 5000
+        });
+      }
+      return;
+    }
+    
+    if (!cryptoValidation.isValid) {
+      if ((window as any).caidoSDK?.window?.showToast) {
+        (window as any).caidoSDK.window.showToast('INVALID SIGNATURE: Signature verification failed. The signature was not created with the provided key or the token has been tampered with.', {
+          variant: 'error',
+          duration: 6000
         });
       }
       return;
@@ -947,11 +1204,12 @@ function validateJWTFields(header: any, payload: any): string[] {
 }
 
 /**
- * This function checks if the signature was generated from the current header+payload combination
+ * This function checks if the signature matches the current header+payload
+ * IMPORTANT: This is structural validation only - it checks if token parts were modified
+ * For cryptographic validation, the "Validate" button should verify with actual keys
  */
 function validateTokenSignature(tab: TokenTab, header: any, payload: any): boolean {
   try {
-    // Reconstruct what the token should look like with current header+payload
     const base64UrlHeader = btoa(JSON.stringify(header))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
@@ -962,45 +1220,19 @@ function validateTokenSignature(tab: TokenTab, header: any, payload: any): boole
       .replace(/\//g, '_')
       .replace(/=+$/, '');
     
-    // Get the original token signature
     const originalParts = tab.token.split('.');
     if (originalParts.length !== 3) {
-      console.log('Signature validation failed: Invalid token format (not 3 parts)');
       return false;
     }
     
-    // Check if the header and payload in the current token match what we expect
-    // If they don't match, the signature is definitely invalid
     const originalHeader = originalParts[0];
     const originalPayload = originalParts[1];
     
-    // Compare the base64url encoded versions
-    if (originalHeader !== base64UrlHeader || originalPayload !== base64UrlPayload) {
-      console.log('Signature validation failed: Header or payload has been modified');
-      console.log('Original header:', originalHeader);
-      console.log('Current header:', base64UrlHeader);
-      console.log('Original payload:', originalPayload);
-      console.log('Current payload:', base64UrlPayload);
-      console.log('Header match:', originalHeader === base64UrlHeader);
-      console.log('Payload match:', originalPayload === base64UrlPayload);
+    if (originalHeader === base64UrlHeader && originalPayload === base64UrlPayload) {
+      return true;
+    } else {
       return false;
     }
-    
-    // If header and payload match, the signature should still be valid
-    // Note: We cannot verify the actual cryptographic signature without the secret key,
-    // but we can at least verify that the token parts haven't been tampered with
-    
-    // Additional check: if algorithm is 'none', there should be no signature or empty signature
-    if (header.alg === 'none') {
-      const signature = originalParts[2];
-      if (signature && signature !== '') {
-        console.log('Signature validation failed: Algorithm is "none" but signature is present');
-        return false;
-      }
-    }
-    
-    console.log('Signature validation passed: Token parts are consistent');
-    return true;
   } catch (error) {
     console.error('Error during signature validation:', error);
     return false;
@@ -1027,20 +1259,35 @@ function updateToken(tabInput: TokenTab) {
     const header = JSON.parse(tab.headerJson);
     const payload = JSON.parse(tab.payloadJson);
     
-    // Base64url encode header and payload
-    const base64UrlHeader = btoa(JSON.stringify(header))
+    // Base64url encode header and payload (properly handle Unicode)
+    const base64UrlHeader = btoa(unescape(encodeURIComponent(JSON.stringify(header))))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');
     
-    const base64UrlPayload = btoa(JSON.stringify(payload))
+    const base64UrlPayload = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');
     
     const parts = tab.token.split('.');
     if (parts.length === 3) {
-      tab.token = `${base64UrlHeader}.${base64UrlPayload}.${parts[2]}`;
+      // Try to automatically re-sign the token if we have a suitable key
+      let newSignature = parts[2]; // Default to original signature
+      let signatureUpdated = false;
+      
+      // Check if we have a compatible signing key
+      const currentAlg = header.alg || 'HS256';
+      const compatibleKey = keys.value.find(k => {
+        if (currentAlg.startsWith('HS')) return k.name.includes('HMAC') || k.name.includes('HS') || k.name.toLowerCase().includes('secret');
+        if (currentAlg.startsWith('RS')) return k.name.includes('RSA') || k.name.includes('RS') || k.name.toLowerCase().includes('private');
+        if (currentAlg.startsWith('ES')) return k.name.includes('ECDSA') || k.name.includes('ES') || k.name.toLowerCase().includes('ecdsa');
+        return false;
+      });
+      
+      // Re-signing disabled - use manual signing interface
+      
+      tab.token = `${base64UrlHeader}.${base64UrlPayload}.${newSignature}`;
       
       // If this is the active tab, update the main token as well
       if (tab === tokenTabs.value[activeTokenTab.value]) {
@@ -1048,10 +1295,17 @@ function updateToken(tabInput: TokenTab) {
       }
       
       if ((window as any).caidoSDK?.window?.showToast) {
-        (window as any).caidoSDK.window.showToast('Token updated successfully - WARNING: Signature is now invalid and needs to be re-signed', {
-          variant: 'warning',
-          duration: 5000
-        });
+        if (signatureUpdated) {
+          (window as any).caidoSDK.window.showToast('Token updated and re-signed successfully with your key!', {
+            variant: 'success',
+            duration: 4000
+          });
+        } else {
+          (window as any).caidoSDK.window.showToast('Token updated - Signature is invalid. Click "Sign" button to re-sign the token with a key.', {
+            variant: 'warning',
+            duration: 6000
+          });
+        }
       }
     }
   } catch (error) {
@@ -1075,15 +1329,12 @@ function saveToDetails(tabInput: TokenTab) {
     const header = JSON.parse(tab.headerJson);
     const payload = JSON.parse(tab.payloadJson);
     
-    // Analyze the updated token
     const analysis = analyzeJWTSecurity(header, payload);
     
-    // Emit to parent for token details view
-    // Add navigate=true to ensure it navigates to the Token Details tab
-    emit('view-details', tab.token, header, payload, analysis, true);
+    emit('view-details-editor', tab.token, header, payload, analysis, true);
     
     if ((window as any).caidoSDK?.window?.showToast) {
-      (window as any).caidoSDK.window.showToast('Token sent to details view', {
+      (window as any).caidoSDK.window.showToast('Opening token in Token Details tab', {
         variant: 'success',
         duration: 3000
       });
@@ -1159,7 +1410,7 @@ async function generateKeyPair() {
   
   // Generate RSA or EC keypair based on selected algorithm
   try {
-    if (['RS256', 'RS384', 'RS512'].includes(newKey.value.algorithm)) {
+    if (['RS256', 'RS384', 'RS512', 'PS256', 'PS384', 'PS512'].includes(newKey.value.algorithm)) {
       await generateRSAKeyPair();
     } else if (['ES256', 'ES384', 'ES512'].includes(newKey.value.algorithm)) {
       await generateECKeyPair();
@@ -1193,15 +1444,22 @@ function clearNotifications() {
 
 async function generateRSAKeyPair() {
   try {
+    // Determine if this is PS* (PSS) or RS* (PKCS1) algorithm
+    const isPSS = ['PS256', 'PS384', 'PS512'].includes(newKey.value.algorithm);
+    const algorithmName = isPSS ? "RSA-PSS" : "RSASSA-PKCS1-v1_5";
+    
+    // Determine hash algorithm
+    const hashAlg = newKey.value.algorithm.includes('256') ? "SHA-256" :
+                    newKey.value.algorithm.includes('384') ? "SHA-384" : "SHA-512";
+    
     // Generate a real RSA key pair using Web Crypto API
-    const modulusLength = newKey.value.algorithm === 'RS512' ? 4096 : 2048;
+    const modulusLength = newKey.value.algorithm.endsWith('512') ? 4096 : 2048;
     const keyPair = await window.crypto.subtle.generateKey(
       {
-        name: "RSASSA-PKCS1-v1_5",
+        name: algorithmName,
         modulusLength: modulusLength,
         publicExponent: new Uint8Array([0x01, 0x00, 0x01]), // 65537
-        hash: { name: newKey.value.algorithm === 'RS256' ? "SHA-256" : 
-                     newKey.value.algorithm === 'RS384' ? "SHA-384" : "SHA-512" }
+        hash: { name: hashAlg }
       },
       true, // extractable
       ["sign", "verify"]
@@ -1318,7 +1576,7 @@ OF/2NxApJCzGCEDdfSp6VQO30hyhRANCAAQRWz+jn65BtOMvdyHKcvjBeBSDZH2r
 -----END PRIVATE KEY-----`;
 }
 
-function saveKey() {
+async function saveKey() {
   // Clear any existing notifications
   clearNotifications();
   
@@ -1377,11 +1635,11 @@ function saveKey() {
   
   showKeyModal.value = false;
   
-  // Update localStorage immediately
+  // Update SDK storage immediately
   try {
-    localStorage.setItem('jwtAnalyzer_keys', JSON.stringify(keys.value));
+    await storageService.saveJWTKeys(keys.value);
   } catch (error) {
-    console.error('Error saving keys to localStorage:', error);
+    console.error('Error saving keys to storage:', error);
   }
   
   if ((window as any).caidoSDK?.window?.showToast) {
@@ -1410,7 +1668,11 @@ function deleteKey(index: number) {
 }
 
 async function signToken() {
-  if (!token.value) {
+  // Get token from the active tab
+  const currentTab = activeTokenForAction.value;
+  const tokenToSign = currentTab?.token || token.value;
+  
+  if (!tokenToSign) {
     if ((window as any).caidoSDK?.window?.showToast) {
       (window as any).caidoSDK.window.showToast('Please provide a token to sign', {
         variant: 'error',
@@ -1421,7 +1683,7 @@ async function signToken() {
   }
 
   try {
-    const parts = token.value.split('.');
+    const parts = tokenToSign.split('.');
     if (parts.length < 2) {
       if ((window as any).caidoSDK?.window?.showToast) {
         (window as any).caidoSDK.window.showToast('Invalid token format', {
@@ -1437,7 +1699,8 @@ async function signToken() {
     try {
       header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
     } catch (e) {
-      header = JSON.parse(headerJson.value || '{}');
+      // If active tab exists, use its header JSON, otherwise use global headerJson
+      header = JSON.parse((currentTab?.headerJson || headerJson.value) || '{}');
     }
 
     // Determine which key to use
@@ -1584,9 +1847,19 @@ async function signToken() {
       }
     }
 
-    // Update the token
-    token.value = `${updatedHeader}.${parts[1]}.${signature}`;
-    headerJson.value = JSON.stringify(header, null, 2);
+    // Update the token - use the active tab if available, otherwise use global token
+    const signedToken = `${updatedHeader}.${parts[1]}.${signature}`;
+    const formattedHeader = JSON.stringify(header, null, 2);
+    
+    if (currentTab) {
+      currentTab.token = signedToken;
+      currentTab.headerJson = formattedHeader;
+      // Re-decode the token to update the display
+      decodeToken(currentTab);
+    } else {
+      token.value = signedToken;
+      headerJson.value = formattedHeader;
+    }
 
     if ((window as any).caidoSDK?.window?.showToast) {
       (window as any).caidoSDK.window.showToast('Token signed successfully', {
@@ -2063,6 +2336,46 @@ function copyToClipboard(text: string) {
     .catch(error => {
       console.error('Failed to copy to clipboard:', error);
     });
+}
+
+// Signature type detection helper functions
+function isSymmetricAlgorithm(alg: string | undefined): boolean {
+  if (!alg) return false;
+  return ['HS256', 'HS384', 'HS512'].includes(alg);
+}
+
+function isAsymmetricAlgorithm(alg: string | undefined): boolean {
+  if (!alg) return false;
+  return ['RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'PS256', 'PS384', 'PS512'].includes(alg);
+}
+
+function formatKeyTypeDisplay(type: string): string {
+  if (type === 'symmetric') return 'HMAC Secret';
+  if (type === 'asymmetric') return 'RSA/EC Key Pair';
+  return type;
+}
+
+function getSignatureTypeLabel(alg: string | undefined): string {
+  if (!alg) return 'Unknown';
+  
+  if (alg === 'none') {
+    return 'None (Unsigned)';
+  }
+  
+  if (isSymmetricAlgorithm(alg)) {
+    return 'Symmetric (HMAC)';
+  }
+  
+  if (isAsymmetricAlgorithm(alg)) {
+    if (alg.startsWith('RS') || alg.startsWith('PS')) {
+      return 'Asymmetric (RSA)';
+    }
+    if (alg.startsWith('ES')) {
+      return 'Asymmetric (ECDSA)';
+    }
+  }
+  
+  return 'Unknown';
 }
 
 // New helper functions for tab-specific operations

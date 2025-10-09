@@ -1,133 +1,38 @@
-<!-- D:\Hunting Data\JWT Analyzer\JWT-Analyzer\packages\frontend\src\views\App.vue OLD -->
+<!-- JWT Analyzer App.vue - Updated with clean Navigation structure -->
 <template>
-  <div class="jwt-analyzer h-full flex flex-col">
-    <!-- Main Content Area -->
-    <main class="flex-1 h-full">
-      <TabView v-model:activeIndex="activeTab" class="h-full">
-        <!-- Dashboard Tab -->
-        <TabPanel>
-          <template #header>
-            <div class="p-tabview-nav-link">
-              <span class="tab-icon"><i class="pi pi-chart-bar"></i></span>
-              <span>Dashboard</span>
-            </div>
-          </template>
-          <DashboardTab 
-            :findings="findings" 
-            @view-details="handleViewDetails" 
-            @refresh="loadFindings"
-            @filters-changed="handleFiltersChanged"
-          />
-        </TabPanel>
+  <div class="h-full flex flex-col gap-1">
+    <Navigation :current-page="currentPage" @page-change="handlePageChange" />
 
-        <!-- Decoder Tab -->
-        <TabPanel>
-          <template #header>
-            <div class="p-tabview-nav-link">
-              <span class="tab-icon"><i class="pi pi-eye"></i></span>
-              <span>JWT Decoder</span>
-            </div>
-          </template>
-          <DecoderTab 
-            @view-details="handleDecoderViewDetails"
-            @send-to-editor="handleSendToEditor" 
-          />
-        </TabPanel>
-
-        <!-- Token Details Tab -->
-        <TabPanel>
-          <template #header>
-            <div class="p-tabview-nav-link">
-              <span class="tab-icon"><i class="pi pi-key"></i></span>
-              <span>Token Details</span>
-            </div>
-          </template>
-          <div class="token-details-container h-full flex flex-col">
-            <!-- Token Tabs navigation -->
-            <div v-if="tokenDetailsTabs.length > 0" class="token-tabs bg-gray-100 dark:bg-surface-700 p-2 rounded-t-lg mb-2 flex items-center overflow-x-auto">
-              <TabView v-model:activeIndex="activeTokenTab" class="token-tabs-inner w-full">
-                <TabPanel v-for="(tab, index) in tokenDetailsTabs" :key="tab.id">
-                  <template #header>
-                    <div class="token-tab-header flex items-center">
-                      <span class="truncate max-w-xs" :title="getTokenTabTitle(tab)">{{ tab.customName || getTokenTabTitle(tab) }}</span>
-                      <button 
-                        @click.stop="closeTokenTab(index)" 
-                        class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                      >
-                        <i class="pi pi-times"></i>
-                      </button>
-                    </div>
-                  </template>
-                  <TokenDetailsTab :finding="tab" @rename="(newName) => renameTab(newName, index)" />
-                </TabPanel>
-              </TabView>
-            </div>
-            
-            <!-- Empty state when no tokens -->
-            <div v-else class="flex items-center justify-center h-full flex-grow">
-              <div class="text-center p-8 bg-gray-50 dark:bg-surface-700 rounded-lg shadow-sm max-w-md mx-auto">
-                <div class="flex justify-center items-center mb-6">
-                  <div class="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                    <i class="pi pi-key text-gray-400" style="font-size: 3.5rem;"></i>
-                  </div>
-                </div>
-                <h3 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Analyze JWT Tokens</h3>
-                <p class="text-gray-500 dark:text-gray-400 mb-6 text-lg">Find and analyze tokens from your requests or use the JWT Decoder to analyze tokens manually.</p>
-                <div class="flex flex-col md:flex-row justify-center gap-4">
-                  <Button label="Go to Dashboard" class="p-button-outlined" @click="activeTab = 0">
-                    <template #icon>
-                      <i class="pi pi-chart-bar"></i>
-                    </template>
-                  </Button>
-                  <Button label="Go to JWT Decoder" class="p-button-outlined" @click="activeTab = 1">
-                    <template #icon>
-                      <i class="pi pi-eye"></i>
-                    </template>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </TabPanel>
-
-        <!-- JWT Editor Tab -->
-        <TabPanel>
-          <template #header>
-            <div class="p-tabview-nav-link">
-              <span class="tab-icon">
-                <i class="pi pi-code"></i>
-              </span>
-              <span>JWT Editor</span>
-            </div>
-          </template>
-          <JWTEditorTab @view-details="handleEditorViewDetails" />
-        </TabPanel>
-
-        <!-- Settings Tab -->
-        <TabPanel class="help-docs-tab">
-          <template #header>
-            <div class="p-tabview-nav-link">
-              <span class="tab-icon"><i class="pi pi-info-circle"></i></span>
-              <span>Help & Docs</span>
-            </div>
-          </template>
-          <HelpAndDocsTab />
-        </TabPanel>
-      </TabView>
-    </main>
+    <div class="flex-1 min-h-0">
+      <component 
+        :is="currentComponent" 
+        :findings="findings"
+        :tokenDetailsTabs="tokenDetailsTabs"
+        :activeTokenTab="activeTokenTab"
+        :finding="tokenDetailsTabs[activeTokenTab] || null"
+        @view-details="handleViewDetails"
+        @refresh="loadFindings"
+        @filters-changed="handleFiltersChanged"
+        @view-details-decoder="handleDecoderViewDetails"
+        @send-to-editor="handleSendToEditor"
+        @view-details-editor="handleEditorViewDetails"
+        @navigate-to="handlePageChange"
+        @navigate-tab="(index) => activeTokenTab = index"
+        @close-token-tab="closeTokenTab"
+        @rename="(newName) => renameTab(newName, activeTokenTab)"
+        @get-token-tab-title="getTokenTabTitle"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { onMounted } from 'vue';
-import { onBeforeUnmount } from 'vue';
-import { computed } from 'vue';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 
+import Navigation from '../components/Navigation.vue';
 import { useSDK } from '../plugins/sdk';
 import type { Finding, JWTHeader, JWTPayload } from '../types';
+import { createJWTStorageService } from '../services/storage';
 
 // Import components
 import DashboardTab from '../components/DashboardTab.vue';
@@ -138,25 +43,48 @@ import JWTEditorTab from '../components/JWTEditorTab.vue';
 import Button from 'primevue/button';
 
 const sdk = useSDK();
+const storageService = createJWTStorageService(sdk);
 const findings = ref<Finding[]>([]);
 const tokenDetailsTabs = ref<(Finding & { customName?: string })[]>([]);
-const activeTab = ref(0);
 const activeTokenTab = ref(0);
+
+// Navigation state
+type PageType = "Dashboard" | "Decoder" | "Token Details" | "JWT Editor" | "Help & Docs";
+const currentPage = ref<PageType>("Dashboard");
+
+const currentComponent = computed(() => {
+  switch (currentPage.value) {
+    case "Dashboard":
+      return DashboardTab;
+    case "Decoder":
+      return DecoderTab;
+    case "Token Details":
+      return TokenDetailsTab;
+    case "JWT Editor":
+      return JWTEditorTab;
+    case "Help & Docs":
+      return HelpAndDocsTab;
+    default:
+      return DashboardTab;
+  }
+});
+
+const handlePageChange = (page: PageType) => {
+  currentPage.value = page;
+};
 
 // Maximum number of token tabs to keep open
 const MAX_TOKEN_TABS = 10;
 
 // Load data and register event handlers
 onMounted(async () => {
-  // Try to load findings from localStorage first
+  // Try to load findings from SDK storage first
   try {
-    const savedFindings = localStorage.getItem('jwt_analyzer_findings');
-    if (savedFindings) {
-      findings.value = JSON.parse(savedFindings);
-      console.log(`[JWT Analyzer] Loaded ${findings.value.length} findings from localStorage`);
+    const savedFindings = storageService.getFindings();
+    if (savedFindings && savedFindings.length > 0) {
+      findings.value = savedFindings;
     }
   } catch (e) {
-    console.error('[JWT Analyzer] Error loading findings from localStorage:', e);
   }
 
   // Fetch existing findings
@@ -180,8 +108,8 @@ onMounted(async () => {
       // DO NOT add to token details tabs automatically
       // Only add to dashboard
       
-      // Always ensure we're on Dashboard tab
-      activeTab.value = 0;
+      // Always ensure we're on Dashboard page
+      currentPage.value = "Dashboard";
       
       // Notify dashboard of the new finding
       window.dispatchEvent(new CustomEvent('jwt-finding-added', {
@@ -192,7 +120,6 @@ onMounted(async () => {
       try {
         localStorage.setItem('jwt_analyzer_findings', JSON.stringify(findings.value));
       } catch (e) {
-        console.error('[JWT Analyzer] Error saving findings to localStorage:', e);
       }
     });
   }
@@ -200,7 +127,6 @@ onMounted(async () => {
   // Listen for backend event when a JWT token is analyzed
   if (sdk && sdk.backend && sdk.backend.onEvent) {
     sdk.backend.onEvent("jwt:analyzed", (finding) => {
-      console.log("[JWT Analyzer] Received jwt:analyzed event from backend");
       
       // Add to dashboard
       const existingIndex = findings.value.findIndex(f => 
@@ -232,7 +158,6 @@ onMounted(async () => {
       try {
         localStorage.setItem('jwt_analyzer_findings', JSON.stringify(findings.value));
       } catch (e) {
-        console.error("Failed to save findings to localStorage:", e);
       }
     });
   }
@@ -240,36 +165,17 @@ onMounted(async () => {
   // Listen for navigate-tab event from components
   window.addEventListener('navigate-tab', ((event: CustomEvent) => {
     if (event.detail && typeof event.detail.tabIndex === 'number') {
-      console.log(`[JWT Analyzer] Navigating to tab index ${event.detail.tabIndex}`);
-      activeTab.value = event.detail.tabIndex;
+      activeTokenTab.value = event.detail.tabIndex;
     }
   }) as EventListener);
 
   // Listen for navigation events
   window.addEventListener('navigate-to-editor', () => {
-    // Switch to JWT Editor tab (tab index 3)
-    activeTab.value = 3;
-  });
-  
-  // Listen for navigation to decoder
-  window.addEventListener('navigate-to-decoder', (event: Event) => {
-    const customEvent = event as CustomEvent;
-    // Switch to Decoder tab (tab index 1)
-    activeTab.value = 1;
-    
-    // Optional: wait a bit and then dispatch event to set the token in decoder
-    if (customEvent.detail && customEvent.detail.token) {
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('set-decoder-token', {
-          detail: { token: customEvent.detail.token }
-        }));
-      }, 100);
-    }
+    currentPage.value = "JWT Editor";
   });
   
   // Listen for the jwt-finding-added event
   window.addEventListener('jwt-finding-added', ((event: CustomEvent) => {
-    console.log("[JWT Analyzer] App received jwt-finding-added event:", event.detail);
     
     if (event.detail) {
       const finding = event.detail as Finding;
@@ -277,50 +183,42 @@ onMounted(async () => {
       const existingIndex = findings.value.findIndex(f => 
         f.metadata?.token === finding.metadata?.token);
       
-      if (existingIndex === -1) {
-        console.log("[JWT Analyzer] Adding new finding to list");
+      if (existingIndex === -1) { 
         findings.value = [finding, ...findings.value];
       } else {
         // Replace with updated finding
-        console.log("[JWT Analyzer] Updating existing finding");
         findings.value[existingIndex] = finding;
       }
       
       // DO NOT add to token details tabs by default
       // We want tokens to only go to dashboard initially
       
-      // Switch to Dashboard tab (instead of Token Details)
-      activeTab.value = 0;
+      // Switch to Dashboard tab
+      currentPage.value = "Dashboard";
     }
   }) as EventListener);
   
   // Listen for jwt-findings-refreshed event
   window.addEventListener('jwt-findings-refreshed', ((event: CustomEvent) => {
-    console.log("[JWT Analyzer] App received jwt-findings-refreshed event");
     
     if (event.detail && Array.isArray(event.detail.findings)) {
       const refreshedFindings = event.detail.findings as Finding[];
-      console.log(`[JWT Analyzer] Updating findings list with ${refreshedFindings.length} items`);
       findings.value = refreshedFindings;
     }
   }) as EventListener);
 
-  // Log initialization
-  if (sdk && sdk.console) {
-    sdk.console.log('JWT Analyzer frontend initialized');
-  }
+  // Initialization complete
 });
 
 // Add cleanup in beforeUnmount
 function cleanupEventListeners() {
   window.removeEventListener('navigate-tab', ((event: CustomEvent) => {
     if (event.detail && typeof event.detail.tabIndex === 'number') {
-      activeTab.value = event.detail.tabIndex;
+      activeTokenTab.value = event.detail.tabIndex;
     }
   }) as EventListener);
   
   window.removeEventListener('navigate-to-editor', () => {});
-  window.removeEventListener('navigate-to-decoder', () => {});
   window.removeEventListener('jwt-finding-added', (() => {}) as EventListener);
   window.removeEventListener('jwt-findings-refreshed', (() => {}) as EventListener);
 }
@@ -351,7 +249,6 @@ async function loadFindings() {
         try {
           localStorage.setItem('jwt_analyzer_findings', JSON.stringify(findings.value));
         } catch (e) {
-          console.error("Failed to save findings to localStorage:", e);
         }
       }
       
@@ -368,9 +265,7 @@ async function loadFindings() {
         detail: { findings: findings.value }
       }));
       
-      console.log(`[JWT Analyzer] Loaded ${findings.value.length} findings total`);
     } catch (error) {
-      console.error('Error fetching findings:', error);
       if (sdk?.notifications) {
         sdk.notifications.error('Failed to load findings');
       }
@@ -416,7 +311,6 @@ function addTokenToDetailsTabs(finding: Finding, makeActive: boolean = false, ad
   try {
     localStorage.setItem('jwt_analyzer_tabs', JSON.stringify(tokenDetailsTabs.value));
   } catch (e) {
-    console.error("Failed to save tabs to localStorage:", e);
   }
 }
 
@@ -440,7 +334,7 @@ function closeTokenTab(index: number) {
     }
     
     // Return to dashboard if all tabs are closed
-      activeTab.value = 0;
+    currentPage.value = "Dashboard";
   }
 }
 
@@ -478,7 +372,6 @@ function renameTab(newName: string, index: number) {
 
 // Methods
 function handleViewDetails(finding: Finding & {navigate?: boolean}) {
-  console.log("[JWT Analyzer] App handling viewDetails event", finding);
   
   // First, add to findings list for the dashboard if not already there
   const existingIndex = findings.value.findIndex(f => 
@@ -496,18 +389,16 @@ function handleViewDetails(finding: Finding & {navigate?: boolean}) {
     try {
       localStorage.setItem('jwt_analyzer_findings', JSON.stringify(findings.value));
     } catch (e) {
-      console.error("Failed to save findings to localStorage:", e);
     }
   }
   
   // Check if we should navigate to the token details tab
   if (finding.navigate === true) {
-    console.log("[JWT Analyzer] Explicitly navigating to Token Details tab");
     // Add to token details tabs and make it active
     addTokenToDetailsTabs(finding, true, true);
     
-    // Switch tab to token details - FIXED: using index 2 for Token Details tab
-    activeTab.value = 2;
+    // Navigate to Token Details page
+    currentPage.value = "Token Details";
     
     // Show notification that token is ready in token details tab
     if (sdk?.notifications) {
@@ -515,7 +406,6 @@ function handleViewDetails(finding: Finding & {navigate?: boolean}) {
     }
   } else {
     // Stay on current tab
-    console.log("[JWT Analyzer] Not navigating - keeping current tab");
     // Do NOT add to token details tabs at all
     
     if (sdk?.notifications) {
@@ -531,7 +421,6 @@ function handleDecoderViewDetails(token: string, header: JWTHeader, payload: JWT
     id: `manual-${Date.now()}`,
     title: 'Manual JWT Analysis',
     severity: determineHighestSeverity(analysis.risks || []),
-    timestamp: new Date().toISOString(),
     metadata: {
       token,
       header,
@@ -539,13 +428,12 @@ function handleDecoderViewDetails(token: string, header: JWTHeader, payload: JWT
       risks: analysis.risks || [],
       suggestions: analysis.suggestions || [],
       source: 'manual',
-      origin: 'JWT Decoder',
-      action: 'Token was manually decoded and analyzed',
-      severity: determineHighestSeverity(analysis.risks || []),
-      timeLeft: analysis.timeLeft || 'Unknown',
+      expStatus: determineExpirationStatus(payload),
+      timeLeft: calculateTimeLeft(payload?.exp),
       issuer: payload.iss || 'Not specified',
       subject: payload.sub || 'Not specified',
       audience: Array.isArray(payload.aud) ? payload.aud.join(', ') : (payload.aud || 'Not specified'),
+      severity: determineHighestSeverity(analysis.risks || []),
     }
   };
   
@@ -565,27 +453,16 @@ function handleDecoderViewDetails(token: string, header: JWTHeader, payload: JWT
     try {
       localStorage.setItem('jwt_analyzer_findings', JSON.stringify(findings.value));
     } catch (e) {
-      console.error("Failed to save findings to localStorage:", e);
     }
   }
   
-  // Check if we should navigate to token details tab
+  // Navigate to Token Details if requested
   if (navigate) {
-    // Add to token details tabs and make it active
     addTokenToDetailsTabs(tempFinding, true, true);
+    currentPage.value = "Token Details";
     
-    // Switch to token details tab - FIXED: using index 2 for Token Details tab
-    activeTab.value = 2;
-    
-    // Show notification
-    if (sdk?.notifications) {
-      sdk.notifications.success('Viewing token details');
-    }
-  } else {
-    // Do NOT add to token details tabs at all
-    // Keep notification to confirm token was added to dashboard
-    if (sdk?.notifications) {
-      sdk.notifications.success('Token added to dashboard');
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Viewing token details', { variant: 'success' });
     }
   }
 }
@@ -597,7 +474,6 @@ function handleEditorViewDetails(token: string, header: JWTHeader, payload: JWTP
     id: `manual-${Date.now()}`,
     title: 'Manual JWT Analysis',
     severity: determineHighestSeverity(analysis.risks || []),
-    timestamp: new Date().toISOString(),
     metadata: {
       token,
       header,
@@ -605,10 +481,11 @@ function handleEditorViewDetails(token: string, header: JWTHeader, payload: JWTP
       risks: analysis.risks || [],
       suggestions: analysis.suggestions || [],
       source: 'manual',
-      origin: 'JWT Editor',
-      action: 'Token was created or modified using the JWT Editor',
       expStatus: determineExpirationStatus(payload),
       timeLeft: calculateTimeLeft(payload?.exp),
+      issuer: payload.iss || 'Not specified',
+      subject: payload.sub || 'Not specified',
+      audience: Array.isArray(payload.aud) ? payload.aud.join(', ') : (payload.aud || 'Not specified'),
       severity: determineHighestSeverity(analysis.risks || [])
     }
   };
@@ -629,27 +506,16 @@ function handleEditorViewDetails(token: string, header: JWTHeader, payload: JWTP
     try {
       localStorage.setItem('jwt_analyzer_findings', JSON.stringify(findings.value));
     } catch (e) {
-      console.error("Failed to save findings to localStorage:", e);
     }
   }
   
-  // Check if we should navigate to token details tab
+  // Navigate to Token Details if requested
   if (navigate) {
-    // Add to token details tabs and make it active
     addTokenToDetailsTabs(tempFinding, true, true);
+    currentPage.value = "Token Details";
     
-    // Switch to token details tab - FIXED: using index 2 for Token Details tab
-    activeTab.value = 2;
-    
-    // Show notification
-    if (sdk?.notifications) {
-      sdk.notifications.success('Viewing token details');
-    }
-  } else {
-    // Do NOT add to token details tabs at all
-    // Keep notification to confirm token was added to dashboard
-    if (sdk?.notifications) {
-      sdk.notifications.success('Token added to dashboard');
+    if (sdk?.window?.showToast) {
+      sdk.window.showToast('Viewing token details', { variant: 'success' });
     }
   }
 }
@@ -693,21 +559,22 @@ function calculateTimeLeft(exp?: number): string {
 
 // Handle send to editor event from DecoderTab
 function handleSendToEditor(token: string) {
-  // Switch to JWT Editor tab
-  activeTab.value = 3;
+  // Navigate to JWT Editor page
+  currentPage.value = "JWT Editor";
   
-  // The JWT Editor component will handle the token creation
-  // We need to emit a custom event to notify the JWT Editor about the new token
-  const event = new CustomEvent('add-token-to-editor', { 
-    detail: { token } 
-  });
-  window.dispatchEvent(event);
+  // Wait for component to mount before dispatching event
+  setTimeout(() => {
+    const event = new CustomEvent('add-token-to-editor', { 
+      detail: { token } 
+    });
+    window.dispatchEvent(event);
+  }, 100);
 }
+
 
 // Update findings when filters are applied
 function handleFiltersChanged(filteredFindings: Finding[]): void {
   // We're receiving the filtered findings from the DashboardTab component
-  console.log(`[JWT Analyzer] Filtered findings: ${filteredFindings.length} of ${findings.value.length} total`);
 }
 </script>
 

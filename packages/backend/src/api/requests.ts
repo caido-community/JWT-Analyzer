@@ -1,15 +1,10 @@
 import { CaidoBackendSDK, CapturedRequest } from "../types";
 import { RequestStore } from "../stores/requestStore";
 
-/**
- * Get all captured requests
- */
 export async function getRequests(sdk: CaidoBackendSDK): Promise<{ kind: string; value?: CapturedRequest[]; error?: string }> {
   try {
     const requestStore = RequestStore.getInstance(sdk);
-    
     const requests = await requestStore.getRequests();
-    sdk.console.log(`Returning ${requests.length} requests from getRequests API`);
     
     return {
       kind: "Success",
@@ -26,9 +21,6 @@ export async function getRequests(sdk: CaidoBackendSDK): Promise<{ kind: string;
   }
 }
 
-/**
- * Get a specific request by ID
- */
 export async function getRequest(
   sdk: CaidoBackendSDK,
   id: string
@@ -42,9 +34,7 @@ export async function getRequest(
     }
     
     const requestStore = RequestStore.getInstance(sdk);
-    
     const request = await requestStore.getRequest(id);
-    sdk.console.log(`getRequest API call for ID: ${id}, found: ${request ? 'yes' : 'no'}`);
     
     if (!request) {
       return {
@@ -68,17 +58,12 @@ export async function getRequest(
   }
 }
 
-/**
- * Clear all requests
- */
 export async function clearRequests(sdk: CaidoBackendSDK): Promise<{ kind: string; error?: string }> {
   try {
     const requestStore = RequestStore.getInstance(sdk);
     await requestStore.clearRequests();
     
-    // Notify frontend
     sdk.api.send("requests:cleared");
-    sdk.console.log("All requests cleared");
     
     return {
       kind: "Success"
