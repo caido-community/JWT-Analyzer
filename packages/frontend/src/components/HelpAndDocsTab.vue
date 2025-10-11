@@ -263,7 +263,7 @@
           <div class="flex items-center justify-between mb-6">
             <div>
               <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">JWT Analyzer</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Version 1.0.2</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Version 1.0.3</p>
             </div>
             <a
               href="https://github.com/amrelsagaei/JWT-Analyzer"

@@ -190,7 +190,45 @@ export const init = (sdk: FrontendSDK) => {
       return request.raw.match(jwtPattern) !== null;
     },
   });
+
+    sdk.replay.addRequestViewMode({
+    label: "JWT",
+    view: {
+      component: JWTViewMode,
+    },
+    condition: (request) => {
+      if (!request.raw) return false;
+      const jwtPattern = /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g;
+      return request.raw.match(jwtPattern) !== null;
+    },
+  });
+
+    sdk.search.addRequestViewMode({
+    label: "JWT",
+    view: {
+      component: JWTViewMode,
+    },
+    condition: (request) => {
+      if (!request.raw) return false;
+      const jwtPattern = /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g;
+      return request.raw.match(jwtPattern) !== null;
+    },
+  });
+
+    sdk.sitemap.addRequestViewMode({
+    label: "JWT",
+    view: {
+      component: JWTViewMode,
+    },
+    condition: (request) => {
+      if (!request.raw) return false;
+      const jwtPattern = /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g;
+      return request.raw.match(jwtPattern) !== null;
+    },
+  });
 };
+
+
 
 function showToastNotification(message: string, type: 'success' | 'info' | 'warning' | 'error') {
   try {
