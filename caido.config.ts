@@ -12,7 +12,7 @@ export default defineConfig({
   id,
   name: "JWT Analyzer",
   description: "Decodes and analyzes JWT tokens in requests and responses",
-  version: "1.0.3",
+  version: "2.0.0",
   author: {
     name: "Amr Elsagaei",
     email: "info@amrelsagaei.com",
@@ -20,22 +20,28 @@ export default defineConfig({
   },
   plugins: [
     {
-      kind: "backend",
-      id: "backend",
-      root: "packages/backend",
-    },
-    {
       kind: 'frontend',
       id: "frontend",
       root: 'packages/frontend',
-      backend: {
-        id: "backend",
-      },
       vite: {
         plugins: [vue()],
         build: {
           rollupOptions: {
-            external: ['@caido/frontend-sdk']
+            external: [
+              '@caido/frontend-sdk', 
+              "@codemirror/autocomplete", 
+              "@codemirror/commands", 
+              "@codemirror/language", 
+              "@codemirror/lint", 
+              "@codemirror/search", 
+              "@codemirror/state", 
+              "@codemirror/view", 
+              "@lezer/common", 
+              "@lezer/highlight", 
+              "@lezer/lr",
+              "vue",
+
+            ]
           }
         },
         resolve: {

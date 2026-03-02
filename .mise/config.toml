@@ -1,0 +1,12 @@
+[tools]
+node = "20"
+pnpm = "9"
+
+[tasks.validate]
+description = "Run all quality gates: lint, typecheck, test, knip"
+run = ["pnpm lint", "pnpm typecheck", "pnpm test", "pnpm knip"]
+
+
+[tasks.dev]
+description = "Build then watch"
+run = ["pnpm build", "pnpm watch"]

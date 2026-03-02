@@ -1,270 +1,220 @@
 import { Classic } from "@caido/primevue";
 import PrimeVue from "primevue/config";
-
-// @ts-ignore
 import { createApp } from "vue";
-import App from "./views/App.vue";
-import JWTViewMode from "./views/JWTViewMode.vue";
-import "./styles/index.css";
-import "primeicons/primeicons.css";
 
+import RequestViewModeContainer from "./components/RequestViewMode/Container.vue";
+import ResponseViewModeContainer from "./components/ResponseViewMode/Container.vue";
 import { SDKPlugin } from "./plugins/sdk";
+import "./styles/index.css";
 import type { FrontendSDK } from "./types";
-import { initializeSDK } from "./stores/sdkStore";
-import { initializeFindingsEvents } from "./stores/findingsStore";
-// import { initializeRequestEvents } from "./stores/requestEvents";
-import { analyzeRequestJWT, extractJWTFromRequest } from "./utils/apiUtils";
+import {
+  analyzeJWTSecurity,
+  buildFinding,
+  decodeJWT,
+  extractJWTs,
+  hasJWT,
+} from "./utils/jwt";
+import App from "./views/App.vue";
 
-// Define the toast notification interface on the window object
-declare global {
-  interface Window {
-    showToast?: (options: { message: string; type: 'success' | 'info' | 'warn' | 'error'; timeout?: number }) => void;
+const PAGE_PATH = "/jwt-analyzer";
+const PLUGIN_ROOT_ID = "plugin--jwt-analyzer";
+
+const Commands = {
+  sendToAnalyzer: "jwt-analyzer.send-to-analyzer",
+  sendResponseToAnalyzer: "jwt-analyzer.send-response-to-analyzer",
+} as const;
+
+type ViewModeOptions = {
+  label: string;
+  view: { component: unknown; props?: Record<string, unknown> };
+  when?: (...args: unknown[]) => boolean;
+};
+
+type ExtendedViewModeSDK = {
+  addRequestViewMode: (options: ViewModeOptions) => void;
+  addResponseViewMode: (options: ViewModeOptions) => void;
+};
+
+type ResponseContext = {
+  response?: { raw?: string | { toText?: () => string } };
+  request?: { host?: string; path?: string; port?: number; isTls?: boolean };
+};
+
+// Extract raw string + id from RequestContext
+function getRawFromContext(
+  context: unknown,
+): { raw: string; id?: string } | undefined {
+  const ctx = context as {
+    type: string;
+    request?: { type?: string; raw?: string; id?: string };
+  };
+
+  if (ctx.type === "RequestContext" && ctx.request !== undefined) {
+    return { raw: ctx.request.raw ?? "", id: ctx.request.id };
   }
+
+  return undefined;
+}
+
+// Extract raw string from a response context.
+function getRawFromResponseContext(context: ResponseContext): string {
+  const raw = context.response?.raw;
+  if (typeof raw === "string") return raw;
+  if (raw !== null && raw !== undefined && typeof raw.toText === "function") {
+    return raw.toText?.() ?? "";
+  }
+  return "";
+}
+
+// Build a Finding from a token string and dispatch it to the Dashboard.
+function sendTokenToDashboard(
+  sdk: FrontendSDK,
+  token: string,
+  source: "request" | "response" | "manual",
+): void {
+  const decoded = decodeJWT(token);
+  if (decoded === undefined) {
+    sdk.window.showToast("Failed to decode JWT token", { variant: "error" });
+    return;
+  }
+
+  const analysis = analyzeJWTSecurity(decoded.header, decoded.payload);
+  const finding = buildFinding(
+    token,
+    decoded.header,
+    decoded.payload,
+    analysis.risks,
+    analysis.suggestions,
+    source,
+  );
+
+  window.dispatchEvent(
+    new CustomEvent("add-token-to-dashboard", { detail: { finding } }),
+  );
+  window.location.hash = PAGE_PATH;
+  sdk.window.showToast("JWT token sent to Dashboard", { variant: "success" });
 }
 
 export const init = (sdk: FrontendSDK) => {
-  initializeSDK(sdk);
-  initializeFindingsEvents(sdk);
-
   const app = createApp(App);
-
-  app.use(PrimeVue, {
-    unstyled: true,
-    pt: Classic,
-  });
-
-  (window as any).caidoSDK = sdk;
-
+  app.use(PrimeVue, { unstyled: true, pt: Classic });
   app.use(SDKPlugin, sdk);
 
   const root = document.createElement("div");
   Object.assign(root.style, { height: "100%", width: "100%" });
-  root.id = `plugin--jwt-analyzer`;
-
+  root.id = PLUGIN_ROOT_ID;
   app.mount(root);
 
-  const pagePath = "/jwt-analyzer";
-  sdk.navigation.addPage(pagePath, { body: root });
-  sdk.sidebar.registerItem("JWT Analyzer", pagePath, {icon: "fa-solid fa-key",});
-  
-  const analyzeJWTFromRequest = async (requestId: string) => {
-    try {
-      const req = await sdk.graphql.request({ id: requestId });
-      
-      if (!req?.request?.raw) {
-        showToastNotification("Could not retrieve request data", "warning");
+  sdk.navigation.addPage(PAGE_PATH, { body: root });
+  sdk.sidebar.registerItem("JWT Analyzer", PAGE_PATH, {
+    icon: "fa-solid fa-key",
+  });
+
+  // Register "Send to JWT Analyzer" on the Request (panel) menu type.
+  sdk.commands.register(Commands.sendToAnalyzer, {
+    name: "Send to JWT Analyzer",
+    group: "JWT Analyzer",
+    run: (context) => {
+      const info = getRawFromContext(context);
+      if (info === undefined) {
+        sdk.window.showToast("No request selected", { variant: "warning" });
         return;
       }
 
-      const jwtMatches = req.request.raw.match(/eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g);
-      const token = jwtMatches?.[0];
+      const tokens = extractJWTs(info.raw);
+      const token = tokens[0];
 
-      if (token) {
-        showToastNotification("JWT token found, analyzing...", "info");
-        
-        const result = await sdk.backend.analyzeJWT({
-          token,
-          requestId,
-          source: 'request'
+      if (token === undefined || token.length === 0) {
+        sdk.window.showToast("No JWT found in this request", {
+          variant: "warning",
         });
-
-        if (result.kind === 'Ok') {
-          navigateToJWTAnalyzer();
-          showToastNotification("JWT analyzed successfully", "success");
-        } else {
-          showToastNotification(`Analysis failed: ${result.error}`, "error");
-        }
-      } else {
-        showToastNotification("No JWT token found in request", "warning");
+        return;
       }
-    } catch (error) {
-      showToastNotification(`Error analyzing JWT: ${error instanceof Error ? error.message : 'Unknown error'}`, "error");
-    }
-  };
 
-  const navigateToJWTAnalyzer = () => {
-    location.hash = `#${pagePath}`;
-  };
-  
-  if (sdk.contextMenu) {
-    sdk.contextMenu.register({
-      group: "JWT Analyzer",
-      items: [
-        {
-          label: "Scan for JWT Token",
-          handler: async (context: any) => {
-            try {
-              showToastNotification("Analyzing JWT token...", "info");
-              
-              let requestObject = null;
-              
-              if (context.request) {
-                requestObject = context.request;
-              } else if (context.row) {
-                requestObject = context.row;
-              } else if (context.getData && typeof context.getData === 'function') {
-                try {
-                  const data = context.getData();
-                  requestObject = data;
-                } catch (err) {}
-              } else {
-                requestObject = context;
-              }
-              
-              if (!requestObject) {
-                showToastNotification("No request available", "warning");
-                return;
-              }
-              
-              const token = extractJWTFromRequest(requestObject);
-              
-              if (token) {
-                let requestId = "manual-analysis";
-                if (requestObject.getId && typeof requestObject.getId === 'function') {
-                  requestId = requestObject.getId() || "manual-analysis";
-                } else if (requestObject.id) {
-                  requestId = requestObject.id;
-                }
-                
-                const result = await analyzeRequestJWT(sdk, token, requestId, 'request');
-                navigateToJWTAnalyzer();
-                showToastNotification("JWT analysis complete", "success");
-              } else {
-                showToastNotification("No JWT token found in the request", "error");
-              }
-            } catch (error) {
-              showToastNotification(`Error analyzing JWT: ${error instanceof Error ? error.message : 'Unknown error'}`, "error");
-            }
-          }
-        }
-      ]
-    });
-  }
-  
-  sdk.commands.register("analyze-jwt", {
-    name: "Scan for JWT Token",
-    run: (context) => {
-      showToastNotification("Scanning for JWT tokens...", "info");
-
-      if (context.type === "RequestRowContext") {
-        const request = context.requests?.[0];
-        if (request?.id) {
-          analyzeJWTFromRequest(request.id);
-        } else {
-          showToastNotification("No valid request selected", "warning");
-        }
-      } else if (context.type === "RequestContext") {
-        const request = context.request;
-        if (request?.id) {
-          analyzeJWTFromRequest(request.id?.toString());
-        } else {
-          showToastNotification("No valid request selected", "warning");
-        }
-      } else {
-        navigateToJWTAnalyzer();
-        showToastNotification("JWT Analyzer opened", "info");
-      }
-    }
+      sendTokenToDashboard(sdk, token, "request");
+    },
+    when: (context) => {
+      const info = getRawFromContext(context);
+      if (info === undefined) return false;
+      return hasJWT(info.raw);
+    },
   });
 
+  // Register on the request panel
   sdk.menu.registerItem({
     type: "Request",
-    commandId: "analyze-jwt",
+    commandId: Commands.sendToAnalyzer,
     leadingIcon: "fas fa-key",
+  });
+
+  sdk.commands.register(Commands.sendResponseToAnalyzer, {
+    name: "Send to JWT Analyzer",
+    group: "JWT Analyzer",
+    run: (context) => {
+      const raw = getRawFromResponseContext(context as ResponseContext);
+
+      const tokens = extractJWTs(raw);
+      const token = tokens[0];
+
+      if (token === undefined || token.length === 0) {
+        sdk.window.showToast("No JWT found in this response", {
+          variant: "warning",
+        });
+        return;
+      }
+
+      sendTokenToDashboard(sdk, token, "response");
+    },
+    when: (context) => {
+      const raw = getRawFromResponseContext(context as ResponseContext);
+      return hasJWT(raw);
+    },
   });
 
   sdk.menu.registerItem({
-    type: "RequestRow",
-    commandId: "analyze-jwt",
+    type: "Response",
+    commandId: Commands.sendResponseToAnalyzer,
     leadingIcon: "fas fa-key",
   });
 
-  sdk.httpHistory.addRequestViewMode({
+  // Register the request view mode
+  const requestViewMode: ViewModeOptions = {
     label: "JWT",
-    view: {
-      component: JWTViewMode,
+    view: { component: RequestViewModeContainer },
+    when: (request: unknown) => {
+      const req = request as { raw?: string } | undefined;
+      return hasJWT(req?.raw ?? "");
     },
-    condition: (request) => {
-      if (!request.raw) return false;
-      const jwtPattern = /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g;
-      return request.raw.match(jwtPattern) !== null;
-    },
-  });
+  };
 
-    sdk.replay.addRequestViewMode({
+  // Register the response view mode
+  const responseViewMode: ViewModeOptions = {
     label: "JWT",
-    view: {
-      component: JWTViewMode,
+    view: { component: ResponseViewModeContainer },
+    when: (response: unknown) => {
+      const res = response as { raw?: string } | undefined;
+      return hasJWT(res?.raw ?? "");
     },
-    condition: (request) => {
-      if (!request.raw) return false;
-      const jwtPattern = /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g;
-      return request.raw.match(jwtPattern) !== null;
-    },
-  });
+  };
 
-    sdk.search.addRequestViewMode({
-    label: "JWT",
-    view: {
-      component: JWTViewMode,
-    },
-    condition: (request) => {
-      if (!request.raw) return false;
-      const jwtPattern = /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g;
-      return request.raw.match(jwtPattern) !== null;
-    },
-  });
+  const surfaces = [
+    sdk.httpHistory,
+    sdk.replay,
+    sdk.search,
+    sdk.sitemap,
+    sdk.intercept,
+  ] as unknown as ExtendedViewModeSDK[];
 
-    sdk.sitemap.addRequestViewMode({
-    label: "JWT",
-    view: {
-      component: JWTViewMode,
-    },
-    condition: (request) => {
-      if (!request.raw) return false;
-      const jwtPattern = /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.?[a-zA-Z0-9_-]*/g;
-      return request.raw.match(jwtPattern) !== null;
-    },
-  });
-};
-
-
-
-function showToastNotification(message: string, type: 'success' | 'info' | 'warning' | 'error') {
-  try {
-    const pluginSdk = (window as any).caidoSDK?.pluginSdk;
-    
-    if (pluginSdk && pluginSdk.notifications) {
-      switch (type) {
-        case 'success': pluginSdk.notifications.success(message); break;
-        case 'info': pluginSdk.notifications.info(message); break;
-        case 'warning': pluginSdk.notifications.warning(message); break;
-        case 'error': pluginSdk.notifications.error(message); break;
-      }
+  for (const surface of surfaces) {
+    try {
+      surface.addRequestViewMode(requestViewMode);
+    } catch {
+      // Surface may not support this view mode in older Caido versions. silently fail.
     }
-  } catch (e) {}
-  
-  if (window.caidoSDK && window.caidoSDK.notifications) {
     try {
-      setTimeout(() => {
-        switch (type) {
-          case 'success': window.caidoSDK!.notifications!.success(message); break;
-          case 'info': window.caidoSDK!.notifications!.info(message); break;
-          case 'warning': window.caidoSDK!.notifications!.warning(message); break;
-          case 'error': window.caidoSDK!.notifications!.error(message); break;
-        }
-      }, 100);
-    } catch (e) {}
+      surface.addResponseViewMode(responseViewMode);
+    } catch {
+      // Surface may not support this view mode in older Caido versions. silently fail.
+    }
   }
-  
-  if (window.caidoSDK && window.caidoSDK.window && typeof window.caidoSDK.window.showToast === 'function') {
-    try {
-      setTimeout(() => {
-        window.caidoSDK!.window!.showToast(message, {
-          variant: type === 'warning' ? 'warning' : type,
-          duration: 3000
-        });
-      }, 200);
-    } catch (e) {}
-  }
-}
+};
