@@ -163,11 +163,10 @@
             <template #body="{ data }">
               <span
                 class="text-xs"
-                :class="
-                  data.metadata?.expStatus === 'expired'
-                    ? 'text-red-400'
-                    : 'text-surface-300'
-                "
+                :class="{
+                  'text-red-400': data.metadata?.expStatus === 'expired',
+                  'text-surface-300': data.metadata?.expStatus !== 'expired',
+                }"
               >
                 {{ data.metadata?.timeLeft ?? "-" }}
               </span>
@@ -227,17 +226,19 @@
 </template>
 
 <script setup lang="ts">
+import type { Finding } from "jwt-analyzer-shared";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton";
-import type { Finding } from "shared";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import FindingExpansion from "./FindingExpansion.vue";
 import { useDashboard } from "./useDashboard";
+
+defineOptions({ name: "DashboardContainer" });
 
 const props = defineProps<{
   findings: Finding[];
@@ -314,7 +315,7 @@ function onViewDetails(finding: Finding): void {
 }
 
 function onDecode(finding: Finding): void {
-  if (finding.metadata?.token) {
+  if (finding.metadata?.token !== undefined && finding.metadata.token !== "") {
     emit("navigate-to", "Decoder");
     setTimeout(() => {
       window.dispatchEvent(
@@ -327,7 +328,7 @@ function onDecode(finding: Finding): void {
 }
 
 function onSendToEditor(finding: Finding): void {
-  if (finding.metadata?.token) {
+  if (finding.metadata?.token !== undefined && finding.metadata.token !== "") {
     emit("navigate-to", "JWT Editor");
     setTimeout(() => {
       window.dispatchEvent(

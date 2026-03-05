@@ -37,11 +37,11 @@
           >Exp</span
         >
         <span
-          :class="
-            finding.metadata?.expStatus === 'expired'
-              ? 'text-red-400 font-medium'
-              : 'text-surface-100'
-          "
+          :class="{
+            'text-red-400 font-medium':
+              finding.metadata?.expStatus === 'expired',
+            'text-surface-100': finding.metadata?.expStatus !== 'expired',
+          }"
         >
           {{ finding.metadata?.timeLeft ?? "-" }}
         </span>
@@ -87,8 +87,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Finding } from "jwt-analyzer-shared";
 import Button from "primevue/button";
-import type { Finding } from "shared";
 
 defineProps<{
   finding: Finding;

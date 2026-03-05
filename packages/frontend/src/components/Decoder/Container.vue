@@ -21,7 +21,7 @@
                 v-model="manualToken"
                 placeholder="Paste a JWT token (e.g. eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)"
                 class="w-full font-mono text-sm"
-                :class="manualToken && !isValidToken ? '!border-red-500' : ''"
+                :class="{ '!border-red-500': manualToken && !isValidToken }"
                 @keydown.enter="decodeManualToken"
               />
               <i
@@ -261,18 +261,20 @@
 </template>
 
 <script setup lang="ts">
+import type { JWTHeader, JWTPayload, JWTRisk } from "jwt-analyzer-shared";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import type { JWTHeader, JWTPayload, JWTRisk } from "shared";
 import { computed } from "vue";
 
 import { useDecoder } from "./useDecoder";
 import type { DecodedToken } from "./useDecoder";
 
-import JsonEditor from "@/components/common/JsonEditor.vue";
-import TokenTab from "@/components/common/TokenTab.vue";
+import JsonEditor from "@/components/Common/JsonEditor.vue";
+import TokenTab from "@/components/Common/TokenTab.vue";
 import { useSDK } from "@/plugins/sdk";
+
+defineOptions({ name: "DecoderContainer" });
 
 const sdk = useSDK();
 

@@ -1,5 +1,3 @@
-// Algorithm classification, hash mapping, and Web Crypto name helpers
-
 const SYMMETRIC_ALGORITHMS = ["HS256", "HS384", "HS512"] as const;
 const RSA_ALGORITHMS = [
   "RS256",

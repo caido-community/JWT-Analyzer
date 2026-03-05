@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "jwt-analyzer-frontend",
   "version": "2.0.0",
   "type": "module",
   "scripts": {
@@ -12,10 +12,9 @@
     "vue": "3.4.37"
   },
   "devDependencies": {
-    "@caido/sdk-backend": "0.53.1",
     "@caido/sdk-frontend": "0.53.0",
     "@codemirror/view": "6.28.1",
-    "shared": "workspace:*",
+    "jwt-analyzer-shared": "workspace:*",
     "vue-tsc": "2.0.29"
   }
 }

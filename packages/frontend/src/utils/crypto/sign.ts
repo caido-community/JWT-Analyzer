@@ -27,15 +27,13 @@ export async function signRSA(
   const key = await importRsaPrivateKey(privateKeyPem, alg);
   const hashAlg = getHashAlgorithm(alg);
   const isPSS = alg.startsWith("PS");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const signAlg: any = isPSS
+  const signAlg: AlgorithmIdentifier | RsaPssParams = isPSS
     ? {
         name: "RSA-PSS",
-        hash: { name: hashAlg },
         saltLength:
           hashAlg === "SHA-256" ? 32 : hashAlg === "SHA-384" ? 48 : 64,
       }
-    : { name: "RSASSA-PKCS1-v1_5", hash: { name: hashAlg } };
+    : { name: "RSASSA-PKCS1-v1_5" };
   const sig = await window.crypto.subtle.sign(
     signAlg,
     key,

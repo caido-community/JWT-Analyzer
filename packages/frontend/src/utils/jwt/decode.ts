@@ -1,4 +1,4 @@
-import type { JWTHeader, JWTPayload } from "shared";
+import type { JWTHeader, JWTPayload } from "jwt-analyzer-shared";
 
 function safeAtob(str: string): string {
   return atob(str);

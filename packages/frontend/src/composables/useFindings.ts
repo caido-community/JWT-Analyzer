@@ -1,4 +1,4 @@
-import type { Finding } from "shared";
+import type { Finding } from "jwt-analyzer-shared";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 import { useSDK } from "@/plugins/sdk";
@@ -36,7 +36,7 @@ export function useFindings() {
         sdk.storage.set as (data: Record<string, unknown>) => Promise<void>
       )(payload);
     } catch {
-      // ignore
+      /* ignore */
     }
   }
 
@@ -119,9 +119,6 @@ export function useFindings() {
   const findingsSelectApi = sdk.findings as
     | { onSelect?: (type: string, cb: (f: Finding) => void) => void }
     | undefined;
-  const backendApi = sdk.backend as unknown as
-    | { onEvent?: (event: string, cb: (f: Finding) => void) => void }
-    | undefined;
 
   onMounted(() => {
     loadFindings();
@@ -131,17 +128,6 @@ export function useFindings() {
         window.dispatchEvent(
           new CustomEvent("jwt-finding-added", { detail: finding }),
         );
-      });
-    }
-    if (backendApi?.onEvent !== undefined) {
-      backendApi.onEvent("jwt:analyzed", (finding: Finding) => {
-        addOrUpdateFinding(finding);
-        window.dispatchEvent(
-          new CustomEvent("jwt-finding-added", { detail: finding }),
-        );
-        sdk.window.showToast("New JWT token analyzed", {
-          variant: "success",
-        });
       });
     }
     window.addEventListener("jwt-finding-added", onFindingAdded);

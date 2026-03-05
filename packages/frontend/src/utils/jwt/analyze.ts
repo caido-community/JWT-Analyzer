@@ -1,4 +1,4 @@
-import type { JWTHeader, JWTPayload, JWTRisk } from "shared";
+import type { JWTHeader, JWTPayload, JWTRisk } from "jwt-analyzer-shared";
 
 type Severity = JWTRisk["severity"];
 

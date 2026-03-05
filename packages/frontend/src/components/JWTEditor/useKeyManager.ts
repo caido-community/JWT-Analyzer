@@ -49,7 +49,6 @@ export const ASYMMETRIC_ALG_OPTIONS = [
   { label: "ES512", value: "ES512" },
 ];
 
-// Module-level state
 const _keys = ref<JWTKey[]>([]);
 const _showKeyDialog = ref(false);
 const _editingIndex = ref(-1);
@@ -89,7 +88,7 @@ export function useKeyManager() {
         sdk.storage.set as (data: Record<string, unknown>) => Promise<void>
       )(payload);
     } catch {
-      // ignore
+      /* ignore */
     }
   }
 
@@ -156,20 +155,20 @@ export function useKeyManager() {
   }
 
   async function saveKey(): Promise<void> {
-    if (!keyForm.value.id.trim()) {
+    if (keyForm.value.id.trim() === "") {
       sdk.window.showToast("Key ID is required", { variant: "error" });
       return;
     }
-    if (!keyForm.value.algorithm) {
+    if (keyForm.value.algorithm === "") {
       sdk.window.showToast("Algorithm is required", { variant: "error" });
       return;
     }
-    if (keyForm.value.type === "symmetric" && !keyForm.value.value) {
+    if (keyForm.value.type === "symmetric" && keyForm.value.value === "") {
       generateRandomKey();
     }
     if (
       keyForm.value.type === "asymmetric" &&
-      (!keyForm.value.publicKey || !keyForm.value.privateKey)
+      (keyForm.value.publicKey === "" || keyForm.value.privateKey === "")
     ) {
       await generateKeyPair();
     }

@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 
-import JsonEditor from "@/components/common/JsonEditor.vue";
+import JsonEditor from "@/components/Common/JsonEditor.vue";
 import type { TokenDetailsData } from "@/composables/useTokenDetailsState";
 import { useSDK } from "@/plugins/sdk";
 

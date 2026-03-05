@@ -1,4 +1,4 @@
-import type { JWTHeader } from "shared";
+import type { JWTHeader } from "jwt-analyzer-shared";
 import { computed, ref, type Ref } from "vue";
 
 import type { JWTKey } from "./useKeyManager";
@@ -22,7 +22,6 @@ export const SIGNING_ALG_OPTIONS = [
   { label: "ES512", value: "ES512" },
 ];
 
-// Module-level state
 const _showSignDialog = ref(false);
 const _selectedKeyIndex = ref(-1);
 const _tempKeyValue = ref("");
@@ -51,7 +50,7 @@ export function useSigning(keys: Ref<JWTKey[]>) {
   }
 
   async function signTab(tab: EditorTab): Promise<void> {
-    if (!tab.token) {
+    if (tab.token === "") {
       sdk.window.showToast("Paste a token first", { variant: "error" });
       return;
     }
@@ -61,15 +60,15 @@ export function useSigning(keys: Ref<JWTKey[]>) {
       return;
     }
 
-    // Parse header
     let header: JWTHeader;
     try {
-      header = JSON.parse(tab.headerJson || "{}") as JWTHeader;
+      header = JSON.parse(
+        tab.headerJson !== "" ? tab.headerJson : "{}",
+      ) as JWTHeader;
     } catch {
       header = { alg: "HS256" };
     }
 
-    // Determine key to use
     let keyValue: string;
     let algorithm: string;
 
@@ -83,7 +82,7 @@ export function useSigning(keys: Ref<JWTKey[]>) {
       }
       keyValue = sel.type === "symmetric" ? sel.value : sel.privateKey;
       algorithm = sel.algorithm;
-    } else if (tempKeyValue.value) {
+    } else if (tempKeyValue.value !== "") {
       keyValue = tempKeyValue.value;
       algorithm = tempKeyAlgorithm.value;
     } else {

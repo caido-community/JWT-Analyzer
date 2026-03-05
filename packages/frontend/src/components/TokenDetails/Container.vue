@@ -131,9 +131,11 @@ import PayloadSection from "./PayloadSection.vue";
 import RisksSection from "./RisksSection.vue";
 import { useTokenDetails } from "./useTokenDetails";
 
-import TokenTab from "@/components/common/TokenTab.vue";
+import TokenTab from "@/components/Common/TokenTab.vue";
 import type { TokenTab as TokenTabType } from "@/composables/useTokenDetailsState";
 import { useTokenDetailsState } from "@/composables/useTokenDetailsState";
+
+defineOptions({ name: "TokenDetailsContainer" });
 
 const emit = defineEmits<{
   (e: "send-to-editor", token: string): void;

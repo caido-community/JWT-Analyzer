@@ -2,8 +2,8 @@ import { Classic } from "@caido/primevue";
 import PrimeVue from "primevue/config";
 import { createApp } from "vue";
 
-import RequestViewModeContainer from "./components/RequestViewMode/Container.vue";
-import ResponseViewModeContainer from "./components/ResponseViewMode/Container.vue";
+import { RequestViewModeContainer } from "./components/RequestViewMode";
+import { ResponseViewModeContainer } from "./components/ResponseViewMode";
 import { SDKPlugin } from "./plugins/sdk";
 import "./styles/index.css";
 import type { FrontendSDK } from "./types";
@@ -40,7 +40,6 @@ type ResponseContext = {
   request?: { host?: string; path?: string; port?: number; isTls?: boolean };
 };
 
-// Extract raw string + id from RequestContext
 function getRawFromContext(
   context: unknown,
 ): { raw: string; id?: string } | undefined {
@@ -56,7 +55,6 @@ function getRawFromContext(
   return undefined;
 }
 
-// Extract raw string from a response context.
 function getRawFromResponseContext(context: ResponseContext): string {
   const raw = context.response?.raw;
   if (typeof raw === "string") return raw;
@@ -66,7 +64,6 @@ function getRawFromResponseContext(context: ResponseContext): string {
   return "";
 }
 
-// Build a Finding from a token string and dispatch it to the Dashboard.
 function sendTokenToDashboard(
   sdk: FrontendSDK,
   token: string,
@@ -110,7 +107,6 @@ export const init = (sdk: FrontendSDK) => {
     icon: "fa-solid fa-key",
   });
 
-  // Register "Send to JWT Analyzer" on the Request (panel) menu type.
   sdk.commands.register(Commands.sendToAnalyzer, {
     name: "Send to JWT Analyzer",
     group: "JWT Analyzer",
@@ -140,7 +136,6 @@ export const init = (sdk: FrontendSDK) => {
     },
   });
 
-  // Register on the request panel
   sdk.menu.registerItem({
     type: "Request",
     commandId: Commands.sendToAnalyzer,
@@ -177,7 +172,6 @@ export const init = (sdk: FrontendSDK) => {
     leadingIcon: "fas fa-key",
   });
 
-  // Register the request view mode
   const requestViewMode: ViewModeOptions = {
     label: "JWT",
     view: { component: RequestViewModeContainer },
@@ -187,7 +181,6 @@ export const init = (sdk: FrontendSDK) => {
     },
   };
 
-  // Register the response view mode
   const responseViewMode: ViewModeOptions = {
     label: "JWT",
     view: { component: ResponseViewModeContainer },
@@ -209,12 +202,12 @@ export const init = (sdk: FrontendSDK) => {
     try {
       surface.addRequestViewMode(requestViewMode);
     } catch {
-      // Surface may not support this view mode in older Caido versions. silently fail.
+      /* ignore */
     }
     try {
       surface.addResponseViewMode(responseViewMode);
     } catch {
-      // Surface may not support this view mode in older Caido versions. silently fail.
+      /* ignore */
     }
   }
 };

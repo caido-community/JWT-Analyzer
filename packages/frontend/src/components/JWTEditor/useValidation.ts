@@ -1,4 +1,4 @@
-import type { JWTHeader } from "shared";
+import type { JWTHeader } from "jwt-analyzer-shared";
 import { computed, ref, type Ref } from "vue";
 
 import type { JWTKey } from "./useKeyManager";
@@ -12,7 +12,6 @@ import {
   verifyRSASignature,
 } from "@/utils/crypto";
 
-// Module-level state
 const _validationKeyIndex = ref(-1);
 
 export function useValidation(keys: Ref<JWTKey[]>) {
@@ -68,7 +67,7 @@ export function useValidation(keys: Ref<JWTKey[]>) {
       sdk.window.showToast("Decode a token first", { variant: "error" });
       return;
     }
-    if (tab.headerJsonError || tab.payloadJsonError) {
+    if (tab.headerJsonError !== "" || tab.payloadJsonError !== "") {
       sdk.window.showToast("Fix JSON errors first", { variant: "error" });
       return;
     }
@@ -102,7 +101,7 @@ export function useValidation(keys: Ref<JWTKey[]>) {
     }
 
     const alg = header.alg;
-    if (!alg || alg === "none") {
+    if (alg === undefined || alg === "" || alg === "none") {
       sdk.window.showToast("Token uses alg=none - no signature to verify", {
         variant: "warning",
       });

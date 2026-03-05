@@ -129,7 +129,9 @@ import { useSplitterState } from "./useSplitterState";
 import { useTokenTabs } from "./useTokenTabs";
 import { useValidation } from "./useValidation";
 
-import TokenTab from "@/components/common/TokenTab.vue";
+import TokenTab from "@/components/Common/TokenTab.vue";
+
+defineOptions({ name: "JWTEditorContainer" });
 
 const {
   tabs,

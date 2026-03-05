@@ -86,7 +86,6 @@ const caidoTheme = EditorView.theme(
   { dark: true },
 );
 
-// JSON syntax colors
 const jsonHighlight = syntaxHighlighting(
   HighlightStyle.define([
     { tag: tags.propertyName, color: "#79c0ff" },

@@ -1,4 +1,4 @@
-import type { JWTHeader, JWTPayload } from "shared";
+import type { JWTHeader, JWTPayload } from "jwt-analyzer-shared";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 import { useSDK } from "@/plugins/sdk";
@@ -16,7 +16,7 @@ export type EditorTab = {
   decodedToken:
     | { header: JWTHeader; payload: JWTPayload; signature: string }
     | undefined;
-  // True after Update Token (header/payload changed, signature not re-signed).
+
   signatureStale?: boolean;
 };
 
@@ -29,7 +29,6 @@ type ViewDetailsEmit = (
   navigate: boolean,
 ) => void;
 
-// Module-level state
 const _tabs = ref<EditorTab[]>([]);
 const _activeIndex = ref(0);
 let _initialized = false;
@@ -87,7 +86,7 @@ export function useTokenTabs() {
   // ── Decode / JSON validation / Update ─────────────────────────────────
 
   function decodeTab(tab: EditorTab): void {
-    if (!tab.token.trim()) return;
+    if (tab.token.trim() === "") return;
     const decoded = decodeJWT(tab.token);
     if (!decoded) {
       sdk.window.showToast("Invalid JWT format", { variant: "error" });
@@ -125,7 +124,7 @@ export function useTokenTabs() {
   }
 
   function updateToken(tab: EditorTab): void {
-    if (tab.headerJsonError || tab.payloadJsonError) {
+    if (tab.headerJsonError !== "" || tab.payloadJsonError !== "") {
       sdk.window.showToast("Fix JSON errors before updating", {
         variant: "error",
       });

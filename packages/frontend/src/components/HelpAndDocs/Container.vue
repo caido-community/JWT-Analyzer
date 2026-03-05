@@ -6,6 +6,8 @@ import Content from "./Content.vue";
 import Header from "./Header.vue";
 import { useSidebar } from "./useSidebar";
 
+defineOptions({ name: "HelpAndDocsContainer" });
+
 const { sections, activeSection, scrollToSection } = useSidebar();
 const contentRef = ref<HTMLElement>();
 
@@ -53,11 +55,13 @@ const isSectionActive = (sectionId: string) =>
                 v-for="section in sections"
                 :key="section.id"
                 class="cursor-pointer py-2 px-3 rounded text-sm transition-colors"
-                :class="
-                  isSectionActive(section.id)
-                    ? 'bg-surface-700 font-medium text-white'
-                    : 'text-surface-300 hover:bg-surface-800 hover:text-white'
-                "
+                :class="{
+                  'bg-surface-700 font-medium text-white': isSectionActive(
+                    section.id,
+                  ),
+                  'text-surface-300 hover:bg-surface-800 hover:text-white':
+                    !isSectionActive(section.id),
+                }"
                 @click="scrollToSection(section.id)"
               >
                 {{ section.title }}

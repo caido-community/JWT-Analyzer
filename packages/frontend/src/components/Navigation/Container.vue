@@ -4,6 +4,8 @@ import MenuBar from "primevue/menubar";
 
 import type { PageType } from "@/composables/useNavigation";
 
+defineOptions({ name: "NavigationContainer" });
+
 const props = defineProps<{
   currentPage: PageType;
 }>();

@@ -5,6 +5,8 @@ import { computed, ref } from "vue";
 
 import { decodeJWT, extractJWTs } from "@/utils/jwt";
 
+defineOptions({ name: "RequestViewModeContainer" });
+
 const props = defineProps<{
   request: RequestFull;
 }>();
@@ -37,7 +39,6 @@ async function copyToken(token: string): Promise<void> {
   await navigator.clipboard.writeText(token);
 }
 
-// Syntax-highlight a JSON value for v-html display.
 function highlightJson(value: unknown): string {
   const json = JSON.stringify(value, null, 2);
   const escaped = json
@@ -56,7 +57,6 @@ function highlightJson(value: unknown): string {
 
 <template>
   <div class="h-full flex flex-col bg-surface-800 text-surface-100 text-sm">
-    <!-- No JWT -->
     <div
       v-if="tokens.length === 0"
       class="flex-1 flex items-center justify-center"
@@ -67,9 +67,7 @@ function highlightJson(value: unknown): string {
       </div>
     </div>
 
-    <!-- Has JWT(s) -->
     <template v-else>
-      <!-- Token selector (when multiple) -->
       <div
         v-if="tokens.length > 1"
         class="flex gap-2 p-3 border-b border-surface-700 overflow-x-auto shrink-0"
@@ -78,18 +76,17 @@ function highlightJson(value: unknown): string {
           v-for="(_, i) in tokens"
           :key="i"
           class="px-3 py-1 rounded text-xs font-mono border transition-colors"
-          :class="
-            selectedIndex === i
-              ? 'bg-primary-500 border-primary-500 text-white'
-              : 'bg-surface-700 border-surface-600 text-surface-300 hover:bg-surface-600'
-          "
+          :class="{
+            'bg-primary-500 border-primary-500 text-white': selectedIndex === i,
+            'bg-surface-700 border-surface-600 text-surface-300 hover:bg-surface-600':
+              selectedIndex !== i,
+          }"
           @click="selectedIndex = i"
         >
           JWT {{ i + 1 }}
         </button>
       </div>
 
-      <!-- Toolbar -->
       <div
         class="flex items-center gap-2 p-3 border-b border-surface-700 shrink-0"
       >
@@ -126,7 +123,6 @@ function highlightJson(value: unknown): string {
         </div>
       </div>
 
-      <!-- Raw token -->
       <div class="px-3 pt-3 pb-2 shrink-0">
         <p
           class="text-xs text-surface-400 uppercase tracking-wide mb-1 font-mono"
@@ -140,12 +136,10 @@ function highlightJson(value: unknown): string {
         </div>
       </div>
 
-      <!-- Decoded sections -->
       <div
         v-if="decoded"
         class="flex-1 overflow-auto px-3 pb-3 flex flex-col gap-3"
       >
-        <!-- Header -->
         <div>
           <p
             class="text-xs text-surface-400 uppercase tracking-wide mb-1 font-mono"
@@ -157,7 +151,7 @@ function highlightJson(value: unknown): string {
             v-html="highlightJson(decoded.header)"
           />
         </div>
-        <!-- Payload -->
+
         <div>
           <p
             class="text-xs text-surface-400 uppercase tracking-wide mb-1 font-mono"

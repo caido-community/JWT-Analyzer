@@ -1,4 +1,4 @@
-import type { JWTHeader, JWTPayload, JWTRisk } from "shared";
+import type { JWTHeader, JWTPayload, JWTRisk } from "jwt-analyzer-shared";
 import { computed, ref } from "vue";
 
 export type TokenDetailsData = {

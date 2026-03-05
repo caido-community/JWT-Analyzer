@@ -1,4 +1,10 @@
-import type { Finding, JWTHeader, JWTPayload, JWTRisk, Severity } from "shared";
+import type {
+  Finding,
+  JWTHeader,
+  JWTPayload,
+  JWTRisk,
+  Severity,
+} from "jwt-analyzer-shared";
 
 const SEVERITY_ORDER: Severity[] = [
   "critical",

@@ -1,4 +1,4 @@
-import type { JWTHeader, JWTPayload } from "shared";
+import type { JWTHeader, JWTPayload } from "jwt-analyzer-shared";
 import { ref } from "vue";
 
 import type { EditorTab } from "./useTokenTabs";
@@ -45,7 +45,6 @@ const DEFAULT_WEAK_SECRETS = [
 
 const WEAK_SECRETS_STORAGE_KEY = "jwtEditor_weakSecrets";
 
-// Module-level state
 const _showAttackDialog = ref(false);
 const _selectedAttack = ref<AttackType>("none");
 const _publicKeyForHmac = ref("");
@@ -111,7 +110,7 @@ export function useAttacks() {
         });
       }
     } catch {
-      // ignore
+      /* ignore */
     }
   }
 
@@ -129,7 +128,7 @@ export function useAttacks() {
         sdk.storage.set as (data: Record<string, unknown>) => Promise<void>
       )(payload);
     } catch {
-      // ignore
+      /* ignore */
     }
   }
 
@@ -205,7 +204,7 @@ export function useAttacks() {
             header.alg = "HS256";
             const h = b64hFn(header);
             const p = b64pFn(payload);
-            if (publicKeyForHmac.value) {
+            if (publicKeyForHmac.value !== "") {
               try {
                 const pubBin = atob(
                   publicKeyForHmac.value

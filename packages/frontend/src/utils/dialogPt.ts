@@ -1,4 +1,3 @@
-// Shared PrimeVue Dialog :pt passthrough for consistent modal styling across the plugin.
 export const dialogPt = {
   mask: {
     class:

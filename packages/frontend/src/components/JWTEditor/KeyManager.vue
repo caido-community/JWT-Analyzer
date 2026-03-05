@@ -50,11 +50,10 @@
           <div class="shrink-0">
             <i
               class="fas text-sm"
-              :class="
-                key.type === 'symmetric'
-                  ? 'fa-key text-secondary-400'
-                  : 'fa-lock text-info-400'
-              "
+              :class="{
+                'fa-key text-secondary-400': key.type === 'symmetric',
+                'fa-lock text-info-400': key.type !== 'symmetric',
+              }"
             ></i>
           </div>
 

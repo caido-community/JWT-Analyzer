@@ -226,7 +226,7 @@ import { useKeyManager } from "./useKeyManager";
 import { useTokenTabs } from "./useTokenTabs";
 import { useValidation } from "./useValidation";
 
-import JsonEditor from "@/components/common/JsonEditor.vue";
+import JsonEditor from "@/components/Common/JsonEditor.vue";
 import { useSDK } from "@/plugins/sdk";
 
 defineEmits<{

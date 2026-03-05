@@ -99,7 +99,6 @@ export async function generateRsaKeyPair(
   };
 }
 
-// Generate RSA key pair and return public key as JWK (for embedded-jwk attack) and private key as PEM.
 export async function generateRsaKeyPairForJwk(alg: string): Promise<{
   jwk: { kty: string; n: string; e: string; alg?: string };
   privateKeyPem: string;

@@ -1,4 +1,4 @@
-import type { Finding } from "shared";
+import type { Finding } from "jwt-analyzer-shared";
 import { computed, ref } from "vue";
 
 import { useSDK } from "@/plugins/sdk";

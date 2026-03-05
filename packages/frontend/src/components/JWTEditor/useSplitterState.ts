@@ -1,6 +1,5 @@
 import { ref } from "vue";
 
-// Module-level refs
 const _rightPanelWidth = ref(296);
 const _keyManagerHeight = ref(240);
 

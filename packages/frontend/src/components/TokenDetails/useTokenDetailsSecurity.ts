@@ -16,7 +16,7 @@ export function getOverallSeverity(data: TokenDetailsData): Severity {
   for (const r of data.risks) {
     const s = r.severity as Severity;
     if (!SEVERITY_ORDER.includes(s)) continue;
-    // Lower index = more severe
+
     if (SEVERITY_ORDER.indexOf(s) < SEVERITY_ORDER.indexOf(worst)) worst = s;
   }
   return worst;

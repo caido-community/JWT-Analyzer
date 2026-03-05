@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { Finding, JWTHeader, JWTPayload, JWTRisk } from "shared";
+import type {
+  Finding,
+  JWTHeader,
+  JWTPayload,
+  JWTRisk,
+} from "jwt-analyzer-shared";
 import { onBeforeUnmount, onMounted } from "vue";
 
 import { Dashboard } from "@/components/Dashboard";
